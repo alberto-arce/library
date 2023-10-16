@@ -6,9 +6,10 @@ interface IUser {
   password: string;
 }
 
-interface IDeleteResponse {
-  message: string;
-  ok: boolean;
+interface IResponse {
+  data?: IUser[];
+  error?: string;
+  success: boolean;
 }
 
 interface ICreateUser {
@@ -17,10 +18,9 @@ interface ICreateUser {
 }
 
 interface IService {
-  getUsers: () => Promise<IUser[]>;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  createUser: (newUser: ICreateUser) => Promise<any>;
-  deleteUser: (_id: string) => Promise<IDeleteResponse>;
+  getUsers: () => Promise<IResponse>;
+  createUser: (newUser: ICreateUser) => Promise<IResponse>;
+  deleteUser: (_id: string) => Promise<IResponse>;
 }
 
 export const userService: IService = {

@@ -16,14 +16,14 @@ import { IMember } from "./interfaces";
 import { memberService } from "../../services";
 
 export const Member = () => {
-  const [members, setMembers] = useState<IMember[]>([]);
+  const [members, setMembers] = useState<IMember[] | undefined>([]);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [isAddingMember, setisAddingMember] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
       const response = await memberService.getMembers();
-      setMembers(response);
+      setMembers(response.data);
     };
     fetchData();
   }, []);
@@ -36,9 +36,9 @@ export const Member = () => {
   const handleDelete = async (_id: string) => {
     try {
       const response = await memberService.deleteMember(_id);
-      if (response.ok) {
+      if (response.success) {
         setMembers((prevMembers) =>
-          prevMembers.filter((member) => member._id !== _id)
+          prevMembers?.filter((member) => member._id !== _id)
         );
       } else {
         console.error("Failed to delete user.");
@@ -48,7 +48,7 @@ export const Member = () => {
     }
   };
 
-  const filteredMembers = members.filter((member) =>
+  const filteredMembers = members?.filter((member) =>
     member.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
@@ -63,9 +63,9 @@ export const Member = () => {
   const handleSaveNewMember = async (newMember: IMember) => {
     try {
       const response = await memberService.createMember(newMember);
-      if (response.ok) {
-        const updatedMembers = await memberService.getMembers();
-        setMembers(updatedMembers);
+      if (response.success) {
+        const response = await memberService.getMembers();
+        setMembers(response.data);
       } else {
         console.error("Failed to create member.");
       }
@@ -101,7 +101,7 @@ export const Member = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {filteredMembers.map((member, index) => (
+            {filteredMembers?.map((member, index) => (
               <TableRow key={index}>
                 <TableCell>{member.name}</TableCell>
                 <TableCell>

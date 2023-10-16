@@ -5,9 +5,10 @@ interface IMember {
   name: string;
 }
 
-interface IDeleteResponse {
-  message: string;
-  ok: boolean;
+interface IResponse {
+  data?: IMember[];
+  error?: string;
+  success: boolean;
 }
 
 interface ICreateMember {
@@ -15,10 +16,9 @@ interface ICreateMember {
 }
 
 interface IService {
-  getMembers: () => Promise<IMember[]>;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  createMember: (newMember: ICreateMember) => Promise<any>;
-  deleteMember: (_id: string) => Promise<IDeleteResponse>;
+  getMembers: () => Promise<IResponse>;
+  createMember: (newMember: ICreateMember) => Promise<IResponse>;
+  deleteMember: (_id: string) => Promise<IResponse>;
 }
 
 export const memberService: IService = {

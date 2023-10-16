@@ -5,11 +5,19 @@ interface IUser {
   password: string;
 }
 
+interface IResponse {
+  user?: {
+    name: string;
+  };
+  token?: string;
+  error?: string;
+  success: boolean;
+}
+
 interface IService {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  login: (user: IUser) => Promise<any>;
+  login: (user: IUser) => Promise<IResponse>;
 }
 
 export const authService: IService = {
-  login: (user: IUser) => api.post("/auth/login", user)
+  login: (user: IUser) => api.post("/auth/login", user),
 };

@@ -1,1 +1,1 @@
-export { BorrowModule } from "./Borrow.tsx";
+export { BorrowModule } from "./Borrow";

@@ -11,19 +11,22 @@ import {
   TextField,
 } from "@mui/material";
 
-import { AddItemDialog } from "../AddItemDialog"; 
+import { AddItemDialog } from "../AddItemDialog";
+import { BorrowModal } from "../BorrowModal"; // Import the BorrowModal component
 import { IBook } from "./interfaces";
-import { bookService } from '../../services';
+import { bookService } from "../../services";
 
 export const Book = () => {
-  const [books, setBooks] = useState<IBook[]>([]);
+  const [selectedBook, setSelectedBook] = useState<IBook | null>(null);
+  const [books, setBooks] = useState<IBook[] | undefined>([]);
+  const [isBorrowModalOpen, setIsBorrowModalOpen] = useState<boolean>(false);
   const [searchTerm, setSearchTerm] = useState<string>("");
-  const [isAddingBook, setIsAddingBook] = useState(false); 
+  const [isAddingBook, setIsAddingBook] = useState<boolean>(false);
 
   useEffect(() => {
     const fetchData = async () => {
       const response = await bookService.getBooks();
-      setBooks(response);
+      setBooks(response?.data);
     };
     fetchData();
   }, []);
@@ -36,8 +39,8 @@ export const Book = () => {
   const handleDelete = async (_id: string) => {
     try {
       const response = await bookService.deleteBook(_id);
-      if (response.ok) {
-        setBooks((prevBooks) => prevBooks.filter((book) => book._id !== _id));
+      if (response.success) {
+        setBooks((prevBooks) => prevBooks?.filter((book) => book._id !== _id));
       } else {
         console.error("Failed to delete book.");
       }
@@ -46,22 +49,22 @@ export const Book = () => {
     }
   };
 
-  const handleBorrow = (_id: string) => {
-    const updatedBooks = books.map((book) => {
-      if (book._id === _id && !book.borrowed) {
-        return {
-          ...book,
-          borrowed: true,
-          borrowedDate: new Date().toLocaleDateString(),
-        };
-      }
-      return book;
-    });
-    setBooks(updatedBooks);
-  };
+  // const handleBorrow = (_id: string) => {
+  //   const updatedBooks = books.map((book) => {
+  //     if (book._id === _id && !book.borrowed) {
+  //       return {
+  //         ...book,
+  //         borrowed: true,
+  //         borrowedDate: new Date().toLocaleDateString(),
+  //       };
+  //     }
+  //     return book;
+  //   });
+  //   setBooks(updatedBooks);
+  // };
 
   const handleReturn = (_id: string) => {
-    const updatedBooks = books.map((book) => {
+    const updatedBooks = books?.map((book) => {
       if (book._id === _id && book.borrowed) {
         return {
           ...book,
@@ -74,7 +77,7 @@ export const Book = () => {
     setBooks(updatedBooks);
   };
 
-  const filteredBooks = books.filter((book) =>
+  const filteredBooks = books?.filter((book) =>
     book.title.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
@@ -89,9 +92,9 @@ export const Book = () => {
   const handleSaveNewBook = async (newBook: IBook) => {
     try {
       const response = await bookService.createBook(newBook);
-      if (response.ok) {
-        const updatedBooks = await bookService.getBooks();
-        setBooks(updatedBooks);
+      if (response.success) {
+        const response = await bookService.getBooks();
+        setBooks(response?.data);
       } else {
         console.error("Failed to create book.");
       }
@@ -99,6 +102,16 @@ export const Book = () => {
       console.error("Error creating book:", error);
     }
     handleCloseAddBookDialog();
+  };
+
+  const openBorrowModal = (book: IBook) => {
+    setSelectedBook(book);
+    setIsBorrowModalOpen(true);
+    setIsBorrowModalOpen(true);
+  };
+
+  const closeBorrowModal = () => {
+    setIsBorrowModalOpen(false);
   };
 
   return (
@@ -126,16 +139,18 @@ export const Book = () => {
               <TableCell>Title</TableCell>
               <TableCell>Author</TableCell>
               <TableCell>ISBN</TableCell>
+              <TableCell>Stock</TableCell>
               <TableCell>Borrowed</TableCell>
               <TableCell>Actions</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {filteredBooks.map((book, index) => (
+            {filteredBooks?.map((book, index) => (
               <TableRow key={index}>
                 <TableCell>{book.title}</TableCell>
                 <TableCell>{book.author}</TableCell>
                 <TableCell>{book.isbn}</TableCell>
+                <TableCell>{book.stock}</TableCell>
                 <TableCell>{book.borrowed ? "Yes" : "No"}</TableCell>
                 <TableCell>
                   {book.borrowed ? (
@@ -151,7 +166,7 @@ export const Book = () => {
                     <Button
                       variant="outlined"
                       color="primary"
-                      onClick={() => handleBorrow(book._id)}
+                      onClick={() => openBorrowModal(book)}
                       sx={{ marginRight: 2 }}
                     >
                       Borrow
@@ -187,8 +202,14 @@ export const Book = () => {
           { label: "Title", value: "title" },
           { label: "Author", value: "author" },
           { label: "ISBN", value: "isbn" },
+          { label: "stock", value: "stock" },
         ]}
+      />
+      <BorrowModal
+        isOpen={isBorrowModalOpen}
+        onClose={closeBorrowModal}
+        selectedBook={selectedBook}
       />
     </Container>
   );
-}
+};

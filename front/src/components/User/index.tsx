@@ -16,14 +16,14 @@ import { IUser } from "./interfaces";
 import { userService } from "../../services";
 
 export const User = () => {
-  const [users, setUsers] = useState<IUser[]>([]);
+  const [users, setUsers] = useState<IUser[] | undefined>([]);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [isAddingUser, setIsAddingUser] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
       const response = await userService.getUsers();
-      setUsers(response);
+      setUsers(response?.data);
     };
     fetchData();
   }, []);
@@ -36,8 +36,8 @@ export const User = () => {
   const handleDelete = async (_id: string) => {
     try {
       const response = await userService.deleteUser(_id);
-      if (response.ok) {
-        setUsers((prevUsers) => prevUsers.filter((user) => user._id !== _id));
+      if (response.success) {
+        setUsers((prevUsers) => prevUsers?.filter((user) => user._id !== _id));
       } else {
         console.error("Failed to delete user.");
       }
@@ -46,7 +46,7 @@ export const User = () => {
     }
   };
 
-  const filteredUsers = users.filter((user) =>
+  const filteredUsers = users?.filter((user) =>
     user.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
@@ -61,9 +61,9 @@ export const User = () => {
   const handleSaveNewUser = async (newUser: IUser) => {
     try {
       const response = await userService.createUser(newUser);
-      if (response.ok) {
-        const updatedUsers = await userService.getUsers();
-        setUsers(updatedUsers);
+      if (response.success) {
+        const response = await userService.getUsers();
+        setUsers(response?.data);
       } else {
         console.error("Failed to create user.");
       }
@@ -99,7 +99,7 @@ export const User = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {filteredUsers.map((user, index) => (
+            {filteredUsers?.map((user, index) => (
               <TableRow key={index}>
                 <TableCell>{user.name}</TableCell>
                 <TableCell>

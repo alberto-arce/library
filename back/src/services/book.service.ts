@@ -1,32 +1,114 @@
 import mongoose from "mongoose";
-import { IBook } from "../interfaces";
-import { BookModel } from "../models";
+import { bookRepository } from "../repositories";
+import { Request } from "express";
 
 class BookService {
   async getBooks() {
-    return BookModel.find().exec();
-  }
-
-  async getBookById(id: string) {
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-      return null;
+    const books = await bookRepository.getBooks();
+    if (!books) {
+      return {
+        statusCode: 500,
+        data: {
+          error: "Error getting books",
+          success: false,
+        },
+      };
     }
-      return BookModel.findById(id).exec();
+    return {
+      statusCode: 200,
+      data: {
+        data: books,
+        success: true,
+      },
+    };
   }
 
-  async createBook(book: IBook) {
-    return BookModel.create(book);
-  }
-
-  async deleteBook(id: string): Promise<IBook | null> {
+  async getBookById(req: Request) {
+    const { id } = req.params;
     if (!mongoose.Types.ObjectId.isValid(id)) {
-      return null;
+      return {
+        statusCode: 400,
+        data: {
+          data: [],
+          error: "Invalid ID",
+          success: false,
+        },
+      };
     }
-    const deletedBook = await BookModel.findByIdAndRemove(id).exec();
+    const book = await bookRepository.getBookById(id);
+    if (!book) {
+      return {
+        statusCode: 404,
+        data: {
+          error: "Book not found",
+          success: false,
+        },
+      };
+    }
+    return {
+      statusCode: 200,
+      data: {
+        data: book,
+        success: true,
+      },
+    };
+  }
+
+  async createBook(req: Request) {
+    const { title, author, isbn, stock } = req.body;
+    const newBook = {
+      title,
+      author,
+      isbn,
+      stock,
+    };
+    const createdBook = await bookRepository.createBook(newBook);
+    if (!createdBook) {
+      return {
+        statusCode: 500,
+        data: {
+          error: "Book was not create",
+          success: false,
+        },
+      };
+    }
+    return {
+      statusCode: 201,
+      data: {
+        data: createdBook,
+        success: true,
+      },
+    };
+  }
+
+  async deleteBook(req: Request) {
+    const { id } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return {
+        statusCode: 404,
+        data: {
+          error: "Invalid ID",
+          success: false,
+        },
+      };
+    }
+    const deletedBook = await bookRepository.deleteBook(id);
     if (!deletedBook) {
-      throw new Error("Book not found");
+      return {
+        statusCode: 404,
+        data: {
+          error: "Book not found",
+          success: false,
+        },
+      };
     }
-    return deletedBook;
+    return {
+      statusCode: 200,
+      data: {
+        data: deletedBook,
+        success: true,
+      },
+    };
   }
 }
 export const bookService = new BookService();

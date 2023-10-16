@@ -10,6 +10,9 @@ export class Book {
   @prop({ required: true, unique: true })
   isbn!: string;
 
+  @prop({ required: true })
+  stock!: number;
+
   @prop({ default: Date.now })
   createdAt?: Date;
 

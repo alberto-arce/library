@@ -2,12 +2,14 @@ import { ChangeEvent, FormEvent, useState } from "react";
 import { TextField, Button, Typography, Container, Paper } from "@mui/material";
 import { authService } from "../../services";
 import { useNavigate } from "react-router-dom";
+import { Alert } from "../Alert";
 
 interface LoginProps {
   onLogin: (loggedIn: boolean) => void;
 }
 
 export const Login: React.FC<LoginProps> = ({ onLogin }) => {
+  const [showAlert, setShowAlert] = useState(false);
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
@@ -29,14 +31,15 @@ export const Login: React.FC<LoginProps> = ({ onLogin }) => {
 
     try {
       const response = await authService.login(user);
-      if (response.user && response.token) {
+      console.log(response);
+      if (response.token) {
         onLogin(true);
         navigate("/");
       } else {
-        console.log("Login failed");
+        setShowAlert(true);
       }
     } catch (error) {
-      console.error("Login error:", error);
+      setShowAlert(true);
     }
   };
 
@@ -74,6 +77,12 @@ export const Login: React.FC<LoginProps> = ({ onLogin }) => {
             Login
           </Button>
         </form>
+        {showAlert && (
+            <Alert
+              message="User does not exist. Please register."
+              onClose={() => setShowAlert(false)}
+            />
+        )}
       </Paper>
     </Container>
   );

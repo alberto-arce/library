@@ -5,26 +5,28 @@ interface IBook {
   title: string;
   author: string;
   isbn: string;
+  stock: number;
   borrowed: boolean;
   borrowedDate?: string;
 }
 
-interface IDeleteResponse {
-  message: string;
-  ok: boolean;
+interface IResponse {
+  data?: IBook[];
+  error?: string;
+  success: boolean;
 }
 
 interface ICreateBook {
   title: string;
   author: string;
   isbn: string;
+  stock: number;
 }
 
 interface IService {
-  getBooks: () => Promise<IBook[]>;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  createBook: (newBook: ICreateBook) => Promise<any>;
-  deleteBook: (_id: string) => Promise<IDeleteResponse>;
+  getBooks: () => Promise<IResponse>;
+  createBook: (newBook: ICreateBook) => Promise<IResponse>;
+  deleteBook: (_id: string) => Promise<IResponse>;
 }
 
 export const bookService: IService = {
