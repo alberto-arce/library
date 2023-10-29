@@ -111,7 +111,7 @@ export const BorrowModal: React.FC<BorrowModalProps> = ({
           </Paper>
         </Box>
         <TextField
-          label="Number of books"
+          label="Cantidad de libros"
           variant="outlined"
           fullWidth
           type="number"
@@ -124,7 +124,7 @@ export const BorrowModal: React.FC<BorrowModalProps> = ({
           color="primary"
           onClick={handleConfirmBorrow}
         >
-          Confirm Borrow
+          Confirmar
         </Button>
       </div>
     </Modal>

@@ -15,8 +15,8 @@ import AdbIcon from "@mui/icons-material/Adb";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 
-const pages = ["users", "members", "books", "borrows"];
-const settings = ["Logout"];
+const pages = ["usuarios", "socios", "libros", "prestamos"];
+const settings = ["salir"];
 export const LayoutModule = () => {
   const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
@@ -39,7 +39,7 @@ export const LayoutModule = () => {
   };
 
   const handleLogout = () => {
-    navigate("/login");
+    navigate("/ingresar");
   };
   return (
     <AppBar position="static">
@@ -164,7 +164,7 @@ export const LayoutModule = () => {
               {settings.map((setting) => (
                 <MenuItem key={setting} onClick={handleCloseUserMenu}>
                   <Typography textAlign="center">
-                    {setting === "Logout" ? (
+                    {setting === "salir" ? (
                       <a
                         href="#"
                         onClick={(e) => {

@@ -76,7 +76,7 @@ export const User = () => {
   return (
     <Container>
       <TextField
-        label="Search by name"
+        label="Buscar por nombre"
         variant="outlined"
         fullWidth
         value={searchTerm}
@@ -89,13 +89,13 @@ export const User = () => {
         onClick={handleOpenAddUserDialog}
         style={{ marginBottom: "20px" }}
       >
-        Add User
+        Agregar usuario
       </Button>
       <Paper>
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell>Name</TableCell>
+              <TableCell>Nombre</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -109,14 +109,14 @@ export const User = () => {
                     onClick={() => handleEdit(user._id)}
                     sx={{ marginRight: 2 }}
                   >
-                    Edit
+                    Editar
                   </Button>
                   <Button
                     variant="outlined"
                     color="secondary"
                     onClick={() => handleDelete(user._id)}
                   >
-                    Delete
+                    Eliminar
                   </Button>
                 </TableCell>
               </TableRow>
@@ -128,10 +128,10 @@ export const User = () => {
         open={isAddingUser}
         onClose={handleCloseAddUserDialog}
         onSave={handleSaveNewUser}
-        title="Add a new user"
+        title="Agregar un usuario"
         fields={[
-          { label: "Name", value: "name" },
-          { label: "Password", value: "password" },
+          { label: "Nombre", value: "name" },
+          { label: "Contraseña", value: "password" },
         ]}
       />
     </Container>

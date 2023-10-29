@@ -10,11 +10,11 @@ import { BorrowModel } from "../models";
 class BorrowService {
   async getBorrows() {
     const borrows = await borrowRepository.getBorrows();
-    if (!borrows) {
+    if (!borrows.length) {
       return {
-        statusCode: 500,
+        statusCode: 404,
         data: {
-          error: "Internal server error",
+          error: "Borrows not found",
           success: false,
         },
       };
@@ -58,7 +58,7 @@ class BorrowService {
     return {
       statusCode: 201,
       data: {
-        data: createdBorrow,
+        data: await createdBorrow.populate('member book'),
         success: true,
       },
     };

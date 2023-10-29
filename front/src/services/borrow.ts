@@ -1,12 +1,6 @@
 import { api } from "./api";
 
-interface IBorrow {
-  _id: string;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  member: any;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  book: any;
-}
+import { IBorrow } from "./../components/Borrow/interfaces";
 
 interface IResponse {
   data?: IBorrow[];
@@ -14,10 +8,14 @@ interface IResponse {
   success: boolean;
 }
 
+interface ICreateBorrow {
+  memberId: string;
+  bookId: string | undefined;
+}
+
 interface IService {
   getBorrows: () => Promise<IResponse>;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  createBorrow: (newBorrow: any) => Promise<IResponse>;
+  createBorrow: (newBorrow: ICreateBorrow) => Promise<IResponse>;
 }
 
 export const borrowService: IService = {

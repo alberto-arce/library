@@ -2,7 +2,7 @@ import { BorrowModel } from "../models";
 
 class BorrowRepository {
   async getBorrows() {
-    return BorrowModel.find().exec();
+    return BorrowModel.find().populate('member book').exec();
   }
   
   async createBorrow(borrow: any) {

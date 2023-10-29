@@ -7,9 +7,9 @@ import { userRepository } from "../repositories";
 class UserService {
   async getUsers() {
     const users = await userRepository.getUsers();
-    if (!users) {
+    if (!users.length) {
       return {
-        statusCode: 500,
+        statusCode: 404,
         data: {
           error: "Users not found",
           success: false,
@@ -39,7 +39,7 @@ class UserService {
     const user = await userRepository.getUserById(id);
     if (!user) {
       return {
-        statusCode: 500,
+        statusCode: 404,
         data: {
           error: "User not found",
           success: false,
@@ -57,11 +57,9 @@ class UserService {
 
   async createUser(req: Request) {
     const { name, password, role } = req.body;
-    const saltRounds = 10;
-    const hashedPassword = await bcrypt.hash(password, saltRounds);
     const newUser = {
       name,
-      password: hashedPassword,
+      password: await bcrypt.hash(password, 10),
       role: role ?? "employee",
     };
     const createdUser = await userRepository.createUser(newUser);

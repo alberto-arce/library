@@ -78,7 +78,7 @@ export const Member = () => {
   return (
     <Container>
       <TextField
-        label="Search by name"
+        label="Buscar por nombre"
         variant="outlined"
         fullWidth
         value={searchTerm}
@@ -91,19 +91,22 @@ export const Member = () => {
         onClick={handleOpenAddMemberDialog}
         style={{ marginBottom: "20px" }}
       >
-        Add Member
+        Agregar socio
       </Button>
       <Paper>
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell>Name</TableCell>
+              <TableCell>Nombre</TableCell>
+              <TableCell>Estado</TableCell>
+              <TableCell>Acciones</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {filteredMembers?.map((member, index) => (
               <TableRow key={index}>
                 <TableCell>{member.name}</TableCell>
+                <TableCell>{member.status.toUpperCase()}</TableCell>
                 <TableCell>
                   <Button
                     variant="outlined"

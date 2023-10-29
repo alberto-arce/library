@@ -1,19 +1,19 @@
-import { prop, getModelForClass } from '@typegoose/typegoose';
+import { prop, getModelForClass } from "@typegoose/typegoose";
 
-export class User { 
-  @prop({ required: true })
+export class User {
+  @prop({ required: true, type: String })
   name!: string;
-  
-  @prop({ required: true })
+
+  @prop({ required: true, type: String })
   password!: string;
-  
-  @prop({ required: true })
+
+  @prop({ required: true, type: String })
   role!: string;
-  
-  @prop({ default: Date.now })
+
+  @prop({ default: Date.now, type: Date })
   createdAt?: Date;
 
-  @prop({ default: Date.now })
-  updatedAt?: Date;
+  @prop({ default: null, type: () => Date })
+  deletedAt?: Date | null;
 }
 export const UserModel = getModelForClass(User);

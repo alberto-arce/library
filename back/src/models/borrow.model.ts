@@ -10,10 +10,10 @@ export class Borrow {
   @prop({ ref: () => Book, required: true })
   book!: Ref<Book>;
 
-  @prop({ default: Date.now })
+  @prop({ default: Date.now, type: Date })
   createdAt?: Date;
 
-  @prop({ default: Date.now })
-  updatedAt?: Date;
+  @prop({ default: null, type: () => Date })
+  deletedAt?: Date | null;
 }
 export const BorrowModel = getModelForClass(Borrow);

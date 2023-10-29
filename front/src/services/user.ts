@@ -1,10 +1,5 @@
 import { api } from "./api";
-
-interface IUser {
-  _id: string;
-  name: string;
-  password: string;
-}
+import { IUser } from "../components/User/interfaces";
 
 interface IResponse {
   data?: IUser[];

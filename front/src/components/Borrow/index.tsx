@@ -17,7 +17,7 @@ import { IBorrow } from "./interfaces";
 export const Borrow = () => {
   const [borrows, setBorrows] = useState<IBorrow[] | undefined>([]);
   const [searchTerm, setSearchTerm] = useState<string>("");
-
+  console.log(borrows);
   useEffect(() => {
     const fetchData = async () => {
       const response = await borrowService.getBorrows();
@@ -37,7 +37,7 @@ export const Borrow = () => {
   return (
     <Container>
       <TextField
-        label="Search by book"
+        label="Buscar por nombre"
         variant="outlined"
         fullWidth
         value={searchTerm}
@@ -48,23 +48,31 @@ export const Borrow = () => {
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell>Book</TableCell>
-              <TableCell>Member</TableCell>
-              <TableCell>Actions</TableCell>
+              <TableCell>Libro</TableCell>
+              <TableCell>Socio</TableCell>
+              <TableCell>Fecha de préstamo</TableCell>
+              <TableCell>Fecha de entrega</TableCell>
+              <TableCell>Acciones</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {borrows?.map((borrow, index) => (
               <TableRow key={index}>
-                <TableCell>{borrow.book}</TableCell>
-                <TableCell>{borrow.member}</TableCell>
+                <TableCell>{borrow.book.title}</TableCell>
+                <TableCell>{borrow.member.name}</TableCell>
+                <TableCell>{new Date(borrow.createdAt).toLocaleDateString()}</TableCell>
+                <TableCell>
+                  {borrow.deletedAt
+                    ? new Date(borrow.deletedAt).toLocaleDateString()
+                    : "No Entregado"}
+                </TableCell>
                 <TableCell>
                   <Button
                     variant="outlined"
                     color="secondary"
                     onClick={() => handleDelete(borrow._id)}
                   >
-                    Delete
+                    Delivery
                   </Button>
                 </TableCell>
               </TableRow>

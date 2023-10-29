@@ -49,20 +49,6 @@ export const Book = () => {
     }
   };
 
-  // const handleBorrow = (_id: string) => {
-  //   const updatedBooks = books.map((book) => {
-  //     if (book._id === _id && !book.borrowed) {
-  //       return {
-  //         ...book,
-  //         borrowed: true,
-  //         borrowedDate: new Date().toLocaleDateString(),
-  //       };
-  //     }
-  //     return book;
-  //   });
-  //   setBooks(updatedBooks);
-  // };
-
   const handleReturn = (_id: string) => {
     const updatedBooks = books?.map((book) => {
       if (book._id === _id && book.borrowed) {
@@ -117,7 +103,7 @@ export const Book = () => {
   return (
     <Container>
       <TextField
-        label="Search by Title"
+        label="Buscar por título"
         variant="outlined"
         fullWidth
         value={searchTerm}
@@ -130,18 +116,17 @@ export const Book = () => {
         onClick={handleOpenAddBookDialog}
         style={{ marginBottom: "20px" }}
       >
-        Add Book
+        Agregar libro
       </Button>
       <Paper>
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell>Title</TableCell>
-              <TableCell>Author</TableCell>
+              <TableCell>Título</TableCell>
+              <TableCell>Autor</TableCell>
               <TableCell>ISBN</TableCell>
-              <TableCell>Stock</TableCell>
-              <TableCell>Borrowed</TableCell>
-              <TableCell>Actions</TableCell>
+              <TableCell>Cantidad</TableCell>
+              <TableCell>Acciones</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -151,7 +136,6 @@ export const Book = () => {
                 <TableCell>{book.author}</TableCell>
                 <TableCell>{book.isbn}</TableCell>
                 <TableCell>{book.stock}</TableCell>
-                <TableCell>{book.borrowed ? "Yes" : "No"}</TableCell>
                 <TableCell>
                   {book.borrowed ? (
                     <Button
@@ -197,12 +181,12 @@ export const Book = () => {
         open={isAddingBook}
         onClose={handleCloseAddBookDialog}
         onSave={handleSaveNewBook}
-        title="Add a New Book"
+        title="Agregar un libro"
         fields={[
-          { label: "Title", value: "title" },
-          { label: "Author", value: "author" },
+          { label: "Título", value: "title" },
+          { label: "Autor", value: "author" },
           { label: "ISBN", value: "isbn" },
-          { label: "stock", value: "stock" },
+          { label: "cantidad", value: "stock" },
         ]}
       />
       <BorrowModal

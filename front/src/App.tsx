@@ -24,17 +24,17 @@ function App() {
             isLoggedIn ? (
               <LayoutModule />
             ) : (
-              <Navigate to="/login" replace={true} />
+              <Navigate to="/ingresar" replace={true} />
             )
           }
         />
-        <Route path="/login" element={<Login onLogin={handleLogin} />} />
+        <Route path="/ingresar" element={<Login onLogin={handleLogin} />} />
         {isLoggedIn && (
           <>
-            <Route path="users" element={<UserModule />} />
-            <Route path="members" element={<MemberModule />} />
-            <Route path="books" element={<BookModule />} />
-            <Route path="borrows" element={<BorrowModule />} />
+            <Route path="usuarios" element={<UserModule />} />
+            <Route path="socios" element={<MemberModule />} />
+            <Route path="libros" element={<BookModule />} />
+            <Route path="prestamos" element={<BorrowModule />} />
           </>
         )}
       </Routes>

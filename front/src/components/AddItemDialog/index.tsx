@@ -54,10 +54,10 @@ export const AddItemDialog = ({
       </DialogContent>
       <DialogActions>
         <Button onClick={handleClose} color="secondary">
-          Cancel
+          Cancelar
         </Button>
         <Button onClick={handleSave} color="primary">
-          Save
+          Guardar
         </Button>
       </DialogActions>
     </Dialog>

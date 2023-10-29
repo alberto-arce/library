@@ -1,9 +1,6 @@
 import { api } from "./api";
 
-interface IMember {
-  _id: string;
-  name: string;
-}
+import { IMember } from "../components/BorrowModal/interfaces";
 
 interface IResponse {
   data?: IMember[];

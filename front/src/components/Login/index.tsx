@@ -47,12 +47,12 @@ export const Login: React.FC<LoginProps> = ({ onLogin }) => {
     <Container maxWidth="xs">
       <Paper elevation={3} style={{ padding: 20 }}>
         <Typography variant="h5" gutterBottom>
-          Login
+          Ingresar
         </Typography>
         <form onSubmit={handleSubmit}>
           <TextField
             fullWidth
-            label="Name"
+            label="Nombre"
             variant="outlined"
             margin="normal"
             value={name}
@@ -60,7 +60,7 @@ export const Login: React.FC<LoginProps> = ({ onLogin }) => {
           />
           <TextField
             fullWidth
-            label="Password"
+            label="Contraseña"
             type="password"
             variant="outlined"
             margin="normal"
@@ -74,7 +74,7 @@ export const Login: React.FC<LoginProps> = ({ onLogin }) => {
             fullWidth
             style={{ marginTop: 20 }}
           >
-            Login
+            Ingresar
           </Button>
         </form>
         {showAlert && (

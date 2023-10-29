@@ -4,4 +4,6 @@ export interface IBorrow {
   member: any;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   book: any;
+  createdAt: Date;
+  deletedAt: Date | null;
 }

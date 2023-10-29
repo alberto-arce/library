@@ -1,14 +1,6 @@
 import { api } from "./api";
 
-interface IBook {
-  _id: string;
-  title: string;
-  author: string;
-  isbn: string;
-  stock: number;
-  borrowed: boolean;
-  borrowedDate?: string;
-}
+import { IBook } from "../components/Book/interfaces";
 
 interface IResponse {
   data?: IBook[];
