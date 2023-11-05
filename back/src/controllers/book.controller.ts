@@ -33,6 +33,16 @@ export const createBook = async (req: Request, res: Response) => {
   }
 };
 
+export const updateBook = async (req: Request, res: Response) => {
+  try {
+    const { statusCode, data } = await bookService.updateBook(req);
+    res.status(statusCode).json(data);
+  } catch (error) {
+    logger.error(`book controller - updateBook\n ${error}`);
+    res.status(500).json({ success: false, data: "Internal Server Error" });
+  }
+};
+
 export const deleteBook = async (req: Request, res: Response) => {
   try {
     const { statusCode, data } = await bookService.deleteBook(req);

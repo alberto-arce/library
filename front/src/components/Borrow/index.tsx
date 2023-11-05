@@ -9,15 +9,13 @@ import {
   TableCell,
   TableRow,
   Button,
-  TextField,
 } from "@mui/material";
 
 import { IBorrow } from "./interfaces";
 
 export const Borrow = () => {
   const [borrows, setBorrows] = useState<IBorrow[] | undefined>([]);
-  const [searchTerm, setSearchTerm] = useState<string>("");
-  console.log(borrows);
+
   useEffect(() => {
     const fetchData = async () => {
       const response = await borrowService.getBorrows();
@@ -26,24 +24,25 @@ export const Borrow = () => {
     fetchData();
   }, []);
 
-  // const filteredBorrows = borrows.filter((borrow) =>
-  //   borrow.name.toLowerCase().includes(searchTerm.toLowerCase())
-  // );
-
-  const handleDelete = (_id: string) => {
-    console.log("Function not implemented.", _id);
+  /**
+   * TODO: alert modal responses
+   */
+  const handleDelete = async (_id: string) => {
+    try {
+      const response = await borrowService.deleteBorrow(_id);
+      if (response.success) {
+        const response = await borrowService.getBorrows();
+        setBorrows(response.data);
+      } else {
+        console.error("Failed to delete borrow.");
+      }
+    } catch (error) {
+      console.error("Error deleting borrow:", error);
+    }
   };
 
   return (
     <Container>
-      <TextField
-        label="Buscar por nombre"
-        variant="outlined"
-        fullWidth
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-        style={{ marginBottom: "20px" }}
-      />
       <Paper>
         <Table>
           <TableHead>
@@ -60,7 +59,9 @@ export const Borrow = () => {
               <TableRow key={index}>
                 <TableCell>{borrow.book.title}</TableCell>
                 <TableCell>{borrow.member.name}</TableCell>
-                <TableCell>{new Date(borrow.createdAt).toLocaleDateString()}</TableCell>
+                <TableCell>
+                  {new Date(borrow.createdAt).toLocaleDateString()}
+                </TableCell>
                 <TableCell>
                   {borrow.deletedAt
                     ? new Date(borrow.deletedAt).toLocaleDateString()
@@ -68,11 +69,12 @@ export const Borrow = () => {
                 </TableCell>
                 <TableCell>
                   <Button
+                    disabled={borrow.deletedAt ? true : false}
                     variant="outlined"
                     color="secondary"
                     onClick={() => handleDelete(borrow._id)}
                   >
-                    Delivery
+                    Recibido
                   </Button>
                 </TableCell>
               </TableRow>

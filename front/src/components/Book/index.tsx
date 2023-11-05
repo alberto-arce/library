@@ -8,20 +8,21 @@ import {
   TableCell,
   Paper,
   Button,
-  TextField,
 } from "@mui/material";
 
 import { AddItemDialog } from "../AddItemDialog";
 import { BorrowModal } from "../BorrowModal"; // Import the BorrowModal component
 import { IBook } from "./interfaces";
 import { bookService } from "../../services";
+import { EditItemDialog } from "../EditItemDialog";
 
 export const Book = () => {
   const [selectedBook, setSelectedBook] = useState<IBook | null>(null);
   const [books, setBooks] = useState<IBook[] | undefined>([]);
   const [isBorrowModalOpen, setIsBorrowModalOpen] = useState<boolean>(false);
-  const [searchTerm, setSearchTerm] = useState<string>("");
   const [isAddingBook, setIsAddingBook] = useState<boolean>(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editBook, setEditBook] = useState<IBook | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -30,50 +31,6 @@ export const Book = () => {
     };
     fetchData();
   }, []);
-
-  const handleEdit = (_id: string) => {
-    // Implement edit logic here
-    console.log(`Edit book with ID: ${_id}`);
-  };
-
-  const handleDelete = async (_id: string) => {
-    try {
-      const response = await bookService.deleteBook(_id);
-      if (response.success) {
-        setBooks((prevBooks) => prevBooks?.filter((book) => book._id !== _id));
-      } else {
-        console.error("Failed to delete book.");
-      }
-    } catch (error) {
-      console.error("Error deleting book:", error);
-    }
-  };
-
-  const handleReturn = (_id: string) => {
-    const updatedBooks = books?.map((book) => {
-      if (book._id === _id && book.borrowed) {
-        return {
-          ...book,
-          borrowed: false,
-          borrowedDate: undefined,
-        };
-      }
-      return book;
-    });
-    setBooks(updatedBooks);
-  };
-
-  const filteredBooks = books?.filter((book) =>
-    book.title.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
-  const handleOpenAddBookDialog = () => {
-    setIsAddingBook(true);
-  };
-
-  const handleCloseAddBookDialog = () => {
-    setIsAddingBook(false);
-  };
 
   const handleSaveNewBook = async (newBook: IBook) => {
     try {
@@ -90,6 +47,47 @@ export const Book = () => {
     handleCloseAddBookDialog();
   };
 
+  const handleEdit = (book: IBook) => {
+    setEditBook(book);
+    setIsEditing(true);
+  };
+
+  const handleSaveEdit = async (editedBook: IBook) => {
+    try {
+      const response = await bookService.updateBook(editedBook._id, editedBook);
+      if (response.success) {
+        const updatedBooks = await bookService.getBooks();
+        setBooks(updatedBooks.data);
+      } else {
+        console.error("Failed to update book.");
+      }
+    } catch (error) {
+      console.error("Error updating book:", error);
+    }
+    setIsEditing(false);
+  };
+
+  const handleDelete = async (_id: string) => {
+    try {
+      const response = await bookService.deleteBook(_id);
+      if (response.success) {
+        setBooks((prevBooks) => prevBooks?.filter((book) => book._id !== _id));
+      } else {
+        console.error("Failed to delete book.");
+      }
+    } catch (error) {
+      console.error("Error deleting book:", error);
+    }
+  };
+
+  const handleOpenAddBookDialog = () => {
+    setIsAddingBook(true);
+  };
+
+  const handleCloseAddBookDialog = () => {
+    setIsAddingBook(false);
+  };
+
   const openBorrowModal = (book: IBook) => {
     setSelectedBook(book);
     setIsBorrowModalOpen(true);
@@ -102,14 +100,6 @@ export const Book = () => {
 
   return (
     <Container>
-      <TextField
-        label="Buscar por título"
-        variant="outlined"
-        fullWidth
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-        style={{ marginBottom: "20px" }}
-      />
       <Button
         variant="contained"
         color="primary"
@@ -124,42 +114,34 @@ export const Book = () => {
             <TableRow>
               <TableCell>Título</TableCell>
               <TableCell>Autor</TableCell>
+              <TableCell>Categoría</TableCell>
               <TableCell>ISBN</TableCell>
               <TableCell>Cantidad</TableCell>
               <TableCell>Acciones</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {filteredBooks?.map((book, index) => (
+            {books?.map((book, index) => (
               <TableRow key={index}>
                 <TableCell>{book.title}</TableCell>
                 <TableCell>{book.author}</TableCell>
+                <TableCell>{book.category}</TableCell>
                 <TableCell>{book.isbn}</TableCell>
                 <TableCell>{book.stock}</TableCell>
                 <TableCell>
-                  {book.borrowed ? (
-                    <Button
-                      variant="outlined"
-                      color="secondary"
-                      onClick={() => handleReturn(book._id)}
-                      sx={{ marginRight: 2 }}
-                    >
-                      Return
-                    </Button>
-                  ) : (
-                    <Button
-                      variant="outlined"
-                      color="primary"
-                      onClick={() => openBorrowModal(book)}
-                      sx={{ marginRight: 2 }}
-                    >
-                      Borrow
-                    </Button>
-                  )}
                   <Button
                     variant="outlined"
                     color="primary"
-                    onClick={() => handleEdit(book._id)}
+                    onClick={() => openBorrowModal(book)}
+                    sx={{ marginRight: 2 }}
+                  >
+                    Borrow
+                  </Button>
+
+                  <Button
+                    variant="outlined"
+                    color="primary"
+                    onClick={() => handleEdit(book)}
                     sx={{ marginRight: 2 }}
                   >
                     Edit
@@ -185,9 +167,23 @@ export const Book = () => {
         fields={[
           { label: "Título", value: "title" },
           { label: "Autor", value: "author" },
+          { label: "Categoría", value: "category" },
           { label: "ISBN", value: "isbn" },
-          { label: "cantidad", value: "stock" },
+          { label: "Cantidad", value: "stock" },
         ]}
+      />
+      <EditItemDialog
+        open={isEditing}
+        onClose={() => setIsEditing(false)}
+        onSave={handleSaveEdit}
+        title="Editar libro"
+        fields={[
+          { label: "Título", value: "title" },
+          { label: "Autor", value: "author" },
+          { label: "Categoría", value: "category" },
+          { label: "Cantidad", value: "stock" },
+        ]}
+        initialData={editBook}
       />
       <BorrowModal
         isOpen={isBorrowModalOpen}

@@ -13,6 +13,12 @@ class MemberRepository {
     return MemberModel.create(newMember);
   }
 
+  async updateMember(id: string, updatedMember: any) {
+    return MemberModel.findByIdAndUpdate(id, updatedMember, {
+      new: true,
+    }).exec();
+  }
+
   async deleteMember(id: string) {
     return MemberModel.findByIdAndRemove(id).exec();
   }

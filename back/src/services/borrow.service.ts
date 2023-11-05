@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import { Request } from "express";
 
 import {
@@ -58,7 +59,37 @@ class BorrowService {
     return {
       statusCode: 201,
       data: {
-        data: await createdBorrow.populate('member book'),
+        data: await createdBorrow.populate("member book"),
+        success: true,
+      },
+    };
+  }
+
+  async deleteBorrow(req: Request) {
+    const { id } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return {
+        statusCode: 404,
+        data: {
+          error: "Invalid ID",
+          success: false,
+        },
+      };
+    }
+    const deletedBorrow = await borrowRepository.deleteBorrow(id);
+    if (!deletedBorrow) {
+      return {
+        statusCode: 404,
+        data: {
+          error: "Borrow not found",
+          success: false,
+        },
+      };
+    }
+    return {
+      statusCode: 200,
+      data: {
+        data: deletedBorrow,
         success: true,
       },
     };

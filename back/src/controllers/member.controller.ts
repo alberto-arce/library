@@ -23,6 +23,16 @@ export const createMember = async (req: Request, res: Response) => {
   }
 };
 
+export const updateMember = async (req: Request, res: Response) => {
+  try {
+    const { statusCode, data } = await memberService.updateMember(req);
+    res.status(statusCode).json(data);
+  } catch (error) {
+    logger.error(`member controller - updateMember\n ${error}`);
+    res.status(500).json({ success: false, data: "Internal Server Error" });
+  }
+};
+
 export const deleteMember = async (req: Request, res: Response) => {
   try {
     const { statusCode, data } = await memberService.deleteMember(req);

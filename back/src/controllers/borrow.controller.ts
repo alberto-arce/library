@@ -18,7 +18,17 @@ export const createBorrow = async (req: Request, res: Response) => {
     const { statusCode, data } = await borrowService.createBorrow(req);
     res.status(statusCode).json(data);
   } catch (error) {
-    logger.error(`borrow controller - getBorrows\n ${error}`);
+    logger.error(`borrow controller - createBorrow\n ${error}`);
+    res.status(500).json({ success: false, data: "Internal Server Error" });
+  }
+};
+
+export const deleteBorrow = async (req: Request, res: Response) => {
+  try {
+    const { statusCode, data } = await borrowService.deleteBorrow(req);
+    res.status(statusCode).json(data);
+  } catch (error) {
+    logger.error(`borrow controller - deleteBorrow\n ${error}`);
     res.status(500).json({ success: false, data: "Internal Server Error" });
   }
 };

@@ -8,17 +8,18 @@ import {
   TableCell,
   Paper,
   Button,
-  TextField,
 } from "@mui/material";
 
 import { AddItemDialog } from "../AddItemDialog";
 import { IUser } from "./interfaces";
 import { userService } from "../../services";
+import { EditItemDialog } from "../EditItemDialog";
 
 export const User = () => {
   const [users, setUsers] = useState<IUser[] | undefined>([]);
-  const [searchTerm, setSearchTerm] = useState<string>("");
   const [isAddingUser, setIsAddingUser] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editUser, setEditUser] = useState<IUser | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -27,36 +28,6 @@ export const User = () => {
     };
     fetchData();
   }, []);
-
-  const handleEdit = (_id: string) => {
-    // Implement edit logic here
-    console.log(`Edit user with ID: ${_id}`);
-  };
-
-  const handleDelete = async (_id: string) => {
-    try {
-      const response = await userService.deleteUser(_id);
-      if (response.success) {
-        setUsers((prevUsers) => prevUsers?.filter((user) => user._id !== _id));
-      } else {
-        console.error("Failed to delete user.");
-      }
-    } catch (error) {
-      console.error("Error deleting user:", error);
-    }
-  };
-
-  const filteredUsers = users?.filter((user) =>
-    user.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
-  const handleOpenAddUserDialog = () => {
-    setIsAddingUser(true);
-  };
-
-  const handleCloseAddUserDialog = () => {
-    setIsAddingUser(false);
-  };
 
   const handleSaveNewUser = async (newUser: IUser) => {
     try {
@@ -73,16 +44,52 @@ export const User = () => {
     handleCloseAddUserDialog();
   };
 
+  const handleEdit = (user: IUser) => {
+    setEditUser(user);
+    setIsEditing(true);
+  };
+
+  const handleSaveEdit = async (editedUser: IUser) => {
+    try {
+      const response = await userService.updateUser(
+        editedUser._id,
+        editedUser
+      );
+      if (response.success) {
+        const updatedUsers = await userService.getUsers();
+        setUsers(updatedUsers.data);
+      } else {
+        console.error("Failed to update user.");
+      }
+    } catch (error) {
+      console.error("Error updating user:", error);
+    }
+    setIsEditing(false);
+  };
+
+  const handleDelete = async (_id: string) => {
+    try {
+      const response = await userService.deleteUser(_id);
+      if (response.success) {
+        setUsers((prevUsers) => prevUsers?.filter((user) => user._id !== _id));
+      } else {
+        console.error("Failed to delete user.");
+      }
+    } catch (error) {
+      console.error("Error deleting user:", error);
+    }
+  };
+
+  const handleOpenAddUserDialog = () => {
+    setIsAddingUser(true);
+  };
+
+  const handleCloseAddUserDialog = () => {
+    setIsAddingUser(false);
+  };
+
   return (
     <Container>
-      <TextField
-        label="Buscar por nombre"
-        variant="outlined"
-        fullWidth
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-        style={{ marginBottom: "20px" }}
-      />
       <Button
         variant="contained"
         color="primary"
@@ -99,14 +106,14 @@ export const User = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {filteredUsers?.map((user, index) => (
+            {users?.map((user, index) => (
               <TableRow key={index}>
                 <TableCell>{user.name}</TableCell>
                 <TableCell>
                   <Button
                     variant="outlined"
                     color="primary"
-                    onClick={() => handleEdit(user._id)}
+                    onClick={() => handleEdit(user)}
                     sx={{ marginRight: 2 }}
                   >
                     Editar
@@ -133,6 +140,14 @@ export const User = () => {
           { label: "Nombre", value: "name" },
           { label: "Contraseña", value: "password" },
         ]}
+      />
+      <EditItemDialog
+        open={isEditing}
+        onClose={() => setIsEditing(false)}
+        onSave={handleSaveEdit}
+        title="Editar usuario"
+        fields={[{ label: "Nombre", value: "name" }]}
+        initialData={editUser}
       />
     </Container>
   );

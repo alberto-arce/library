@@ -28,9 +28,7 @@ class AuthService {
         },
       };
     }
-    const token = jwt.sign({ name: user.name }, "SECRET_KEY", {
-      expiresIn: "1h",
-    });
+    const token = jwt.sign({ name: user.name }, "SECRET_KEY")
     return {
       statusCode: 200,
       data: {

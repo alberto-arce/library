@@ -1,4 +1,5 @@
-import { useState } from "react";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { useState, useEffect } from "react";
 import {
   Dialog,
   DialogTitle,
@@ -11,40 +12,40 @@ import {
   Button,
 } from "@mui/material";
 
-import { IAddItemProps } from "./interfaces";
+import { IEditItemProps } from "./interfaces";
 
-export const AddItemDialog = ({
+export const EditItemDialog = ({
   open,
   onClose,
   onSave,
   title,
   fields,
-}: IAddItemProps) => {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [item, setItem] = useState<any>({});
+  initialData,
+}: IEditItemProps) => {
+  const [editedData, setEditedData] = useState(initialData || {});
+
+  useEffect(() => {
+    setEditedData(initialData || {});
+  }, [initialData]);
+
   const handleFieldChange = (field: string, value: string) => {
-    setItem({ ...item, [field]: value });
+    setEditedData({ ...editedData, [field]: value });
   };
 
   const handleSave = () => {
-    onSave(item);
-    setItem({});
-  };
-
-  const handleClose = () => {
+    onSave(editedData);
     onClose();
-    setItem({});
   };
 
   return (
-    <Dialog open={open} onClose={handleClose}>
+    <Dialog open={open} onClose={onClose}>
       <DialogTitle>{title}</DialogTitle>
       <DialogContent>
-        {fields.map((field) => (
+        {fields.map((field: any) => (
           <FormControl fullWidth key={field.label}>
             <InputLabel>{field.label}</InputLabel>
             <Input
-              value={item[field.value] || ""}
+              value={editedData[field.value] || ""}
               onChange={(e) => handleFieldChange(field.value, e.target.value)}
             />
             <FormHelperText>Enter {field.label}</FormHelperText>
@@ -52,7 +53,7 @@ export const AddItemDialog = ({
         ))}
       </DialogContent>
       <DialogActions>
-        <Button onClick={handleClose} color="secondary">
+        <Button onClick={onClose} color="secondary">
           Cancelar
         </Button>
         <Button onClick={handleSave} color="primary">

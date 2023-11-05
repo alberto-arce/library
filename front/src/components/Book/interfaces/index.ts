@@ -2,8 +2,9 @@ export interface IBook {
   _id: string;
   title: string;
   author: string;
+  category: string;
   isbn: string;
   stock: number;
-  borrowed: boolean;
-  borrowedDate?: string;
+  createdAt: Date;
+  updatedAt: Date;
 }

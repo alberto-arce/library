@@ -10,8 +10,8 @@ interface IBook {
   title: string;
   author: string;
   isbn: string;
-  borrowed: boolean;
-  borrowedDate?: string;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export interface BorrowModalProps {

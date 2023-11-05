@@ -14,6 +14,12 @@ class BookRepository {
     return BookModel.create(book);
   }
 
+  async updateBook(id: string, updatedBook: any) {
+    return BookModel.findByIdAndUpdate(id, updatedBook, {
+      new: true,
+    }).exec();
+  }
+
   async deleteBook(id: string): Promise<IBook | null> {
     return BookModel.findByIdAndRemove(id).exec();
   }

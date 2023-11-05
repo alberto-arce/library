@@ -6,6 +6,9 @@ export class Book {
 
   @prop({ required: true, type: String })
   author!: string;
+  
+  @prop({ required: true, type: String })
+  category!: string;
 
   @prop({ required: true, unique: true, type: String })
   isbn!: string;

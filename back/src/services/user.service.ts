@@ -8,51 +8,21 @@ class UserService {
   async getUsers() {
     const users = await userRepository.getUsers();
     if (!users.length) {
-      return {
-        statusCode: 404,
-        data: {
-          error: "Users not found",
-          success: false,
-        },
-      };
+      return this.createResponse(404, { error: "Users not found" }, false);
     }
-    return {
-      statusCode: 200,
-      data: {
-        data: users,
-        success: true,
-      },
-    };
+    return this.createResponse(200, { data: users }, true);
   }
 
   async getUserById(req: Request) {
     const { id } = req.params;
     if (!mongoose.Types.ObjectId.isValid(id)) {
-      return {
-        statusCode: 400,
-        data: {
-          error: "Invalid ID",
-          success: false,
-        },
-      };
+      return this.createResponse(400, { error: "Invalid ID" }, false);
     }
     const user = await userRepository.getUserById(id);
     if (!user) {
-      return {
-        statusCode: 404,
-        data: {
-          error: "User not found",
-          success: false,
-        },
-      };
+      return this.createResponse(404, { error: "User not found" }, false);
     }
-    return {
-      statusCode: 200,
-      data: {
-        data: user,
-        success: true,
-      },
-    };
+    return this.createResponse(200, { data: user }, true);
   }
 
   async createUser(req: Request) {
@@ -64,49 +34,44 @@ class UserService {
     };
     const createdUser = await userRepository.createUser(newUser);
     if (!createdUser) {
-      return {
-        statusCode: 500,
-        data: {
-          error: "User was not create",
-          success: false,
-        },
-      };
+      return this.createResponse(500, { error: "User was not created" }, false);
     }
-    return {
-      statusCode: 201,
-      data: {
-        data: createdUser,
-        success: true,
-      },
-    };
+    return this.createResponse(201, { data: createdUser }, true);
+  }
+
+  async updateUser(req: Request) {
+    const { id } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return this.createResponse(400, { error: "Invalid ID" }, false);
+    }
+    const { name } = req.body;
+    const updatedUser = await userRepository.updateUser(id, {
+      name,
+    });
+    if (!updatedUser) {
+      return this.createResponse(500, { error: "User was not updated" }, false);
+    }
+    return this.createResponse(200, { data: updatedUser }, true);
   }
 
   async deleteUser(req: Request) {
     const { id } = req.params;
     if (!mongoose.Types.ObjectId.isValid(id)) {
-      return {
-        statusCode: 404,
-        data: {
-          error: "Invalid ID",
-          success: false,
-        },
-      };
+      return this.createResponse(400, { error: "Invalid ID" }, false);
     }
     const deletedUser = await userRepository.deleteUser(id);
     if (!deletedUser) {
-      return {
-        statusCode: 500,
-        data: {
-          error: "User was not delete",
-          success: false,
-        },
-      };
+      return this.createResponse(500, { error: "User was not deleted" }, false);
     }
+    return this.createResponse(200, { data: deletedUser }, true);
+  }
+
+  private createResponse(statusCode: number, data: any, success: boolean) {
     return {
-      statusCode: 200,
+      statusCode,
       data: {
-        data: deletedUser,
-        success: true,
+        ...data,
+        success,
       },
     };
   }

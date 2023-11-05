@@ -4,6 +4,8 @@ import { authService } from "../../services";
 import { useNavigate } from "react-router-dom";
 import { Alert } from "../Alert";
 
+import { localStorage } from "../../services";
+
 interface LoginProps {
   onLogin: (loggedIn: boolean) => void;
 }
@@ -31,8 +33,8 @@ export const Login: React.FC<LoginProps> = ({ onLogin }) => {
 
     try {
       const response = await authService.login(user);
-      console.log(response);
       if (response.token) {
+        localStorage.set(response.token);
         onLogin(true);
         navigate("/");
       } else {
@@ -78,10 +80,10 @@ export const Login: React.FC<LoginProps> = ({ onLogin }) => {
           </Button>
         </form>
         {showAlert && (
-            <Alert
-              message="User does not exist. Please register."
-              onClose={() => setShowAlert(false)}
-            />
+          <Alert
+            message="User does not exist. Please register."
+            onClose={() => setShowAlert(false)}
+          />
         )}
       </Paper>
     </Container>

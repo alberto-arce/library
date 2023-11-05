@@ -8,17 +8,18 @@ import {
   TableCell,
   Paper,
   Button,
-  TextField,
 } from "@mui/material";
 
 import { AddItemDialog } from "../AddItemDialog";
+import { EditItemDialog } from "../EditItemDialog";
 import { IMember } from "./interfaces";
 import { memberService } from "../../services";
 
 export const Member = () => {
   const [members, setMembers] = useState<IMember[] | undefined>([]);
-  const [searchTerm, setSearchTerm] = useState<string>("");
   const [isAddingMember, setisAddingMember] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editMember, setEditMember] = useState<IMember | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -28,9 +29,27 @@ export const Member = () => {
     fetchData();
   }, []);
 
-  const handleEdit = (_id: string) => {
-    // Implement edit logic here
-    console.log(`Edit member with ID: ${_id}`);
+  const handleEdit = (member: IMember) => {
+    setEditMember(member);
+    setIsEditing(true);
+  };
+
+  const handleSaveEdit = async (editedMember: IMember) => {
+    try {
+      const response = await memberService.updateMember(
+        editedMember._id,
+        editedMember
+      );
+      if (response.success) {
+        const updatedMembers = await memberService.getMembers();
+        setMembers(updatedMembers.data);
+      } else {
+        console.error("Failed to update member.");
+      }
+    } catch (error) {
+      console.error("Error updating member:", error);
+    }
+    setIsEditing(false);
   };
 
   const handleDelete = async (_id: string) => {
@@ -47,10 +66,6 @@ export const Member = () => {
       console.error("Error deleting user:", error);
     }
   };
-
-  const filteredMembers = members?.filter((member) =>
-    member.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
 
   const handleOpenAddMemberDialog = () => {
     setisAddingMember(true);
@@ -77,14 +92,6 @@ export const Member = () => {
 
   return (
     <Container>
-      <TextField
-        label="Buscar por nombre"
-        variant="outlined"
-        fullWidth
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-        style={{ marginBottom: "20px" }}
-      />
       <Button
         variant="contained"
         color="primary"
@@ -103,7 +110,7 @@ export const Member = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {filteredMembers?.map((member, index) => (
+            {members?.map((member, index) => (
               <TableRow key={index}>
                 <TableCell>{member.name}</TableCell>
                 <TableCell>{member.status.toUpperCase()}</TableCell>
@@ -111,7 +118,7 @@ export const Member = () => {
                   <Button
                     variant="outlined"
                     color="primary"
-                    onClick={() => handleEdit(member._id)}
+                    onClick={() => handleEdit(member)}
                     sx={{ marginRight: 2 }}
                   >
                     Edit
@@ -135,6 +142,14 @@ export const Member = () => {
         onSave={handleSaveNewMember}
         title="Add a new member"
         fields={[{ label: "Name", value: "name" }]}
+      />
+      <EditItemDialog
+        open={isEditing}
+        onClose={() => setIsEditing(false)}
+        onSave={handleSaveEdit}
+        title="Editar socio"
+        fields={[{ label: "Nombre", value: "name" }]}
+        initialData={editMember}
       />
     </Container>
   );

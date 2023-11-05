@@ -7,10 +7,10 @@ import {
   TableCell,
   TableHead,
   TableRow,
-  TextField,
   Box,
   Button,
   Typography,
+  TextField,
 } from "@mui/material";
 
 import { memberService } from "../../services";
@@ -23,7 +23,6 @@ export const BorrowModal: React.FC<BorrowModalProps> = ({
   onClose,
   selectedBook,
 }) => {
-  const [searchTerm, setSearchTerm] = useState<string>("");
   const [members, setMembers] = useState<IMember[] | undefined>([]);
   const [numberSelectedBooks, setNumberSelectedBooks] = useState<string>("1");
   const [selectedMember, setSelectedMember] = useState<IMember | null>(null);
@@ -58,10 +57,6 @@ export const BorrowModal: React.FC<BorrowModalProps> = ({
     }
   };
 
-  const filteredMembers = members?.filter((member) =>
-    member.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
   return (
     <Modal open={isOpen} onClose={closeBorrowModal}>
       <div className="modal-container">
@@ -76,14 +71,6 @@ export const BorrowModal: React.FC<BorrowModalProps> = ({
             </Typography>
           </div>
         )}
-        <TextField
-          label="Search by member"
-          variant="outlined"
-          fullWidth
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          style={{ marginBottom: "20px" }}
-        />
         <Box className="table-container">
           <Paper>
             <Table>
@@ -93,7 +80,7 @@ export const BorrowModal: React.FC<BorrowModalProps> = ({
                 </TableRow>
               </TableHead>
               <TableBody>
-                {filteredMembers?.map((member, index) => (
+                {members?.map((member, index) => (
                   <TableRow
                     key={index}
                     className={

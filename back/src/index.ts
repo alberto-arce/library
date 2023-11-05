@@ -11,15 +11,16 @@ import {
 } from "./routes";
 import { connectToDatabase } from "./database";
 import { logger } from "./logs";
+import { authentication } from "./middlewares";
 
 const app = express();
 app.use(cors());
 app.use(express.json());
-app.use("/v1", userRoutes);
-app.use("/v1", bookRoutes);
 app.use("/v1", authRoutes);
+app.use("/v1", authentication, userRoutes);
+app.use("/v1", bookRoutes);
 app.use("/v1", borrowRoutes);
-app.use("/v1", memberRoutes);
+app.use("/v1", authentication, memberRoutes);
 
 async function init() {
   try {

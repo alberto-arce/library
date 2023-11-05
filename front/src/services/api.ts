@@ -1,6 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import axios, { AxiosError } from "axios";
 import { apiUrl } from "../common";
-// import localStorage from './localStorage'
+import { localStorage } from "./local.storage";
 
 const api = axios.create({
   baseURL: apiUrl,
@@ -13,20 +14,18 @@ const api = axios.create({
 
 api.interceptors.request.use(
   (config) => {
-    // const data = localStorage.get() // Before request is sent
-    // if (data) {
-    //   // eslint-disable-next-line no-param-reassign
-    //   config.headers.common.Authorization = `${data.token}`
-    // }
+    const token = localStorage.get();
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
     return config;
   },
-  (error: AxiosError) => Promise.reject(error) 
+  (error: AxiosError) => Promise.reject(error)
 );
 
 api.interceptors.response.use(
-  (response) => response.data, 
-  (error: AxiosError) =>
-    Promise.reject(console.log(error))
+  (response) => response.data,
+  (error: AxiosError) => Promise.reject(console.log(error))
 );
 
 export { api };
