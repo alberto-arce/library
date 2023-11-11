@@ -5,7 +5,7 @@ import { logger } from "../logs";
 
 export const getUsers = async (_: Request, res: Response) => {
   try {
-    const { statusCode, data } = await userService.getUsers();
+    const { statusCode, data } = await userService.getAll();
     res.status(statusCode).json(data);
   } catch (error) {
     logger.error(`user controller - getUsers\n ${error}`);
@@ -15,7 +15,7 @@ export const getUsers = async (_: Request, res: Response) => {
 
 export const getUserById = async (req: Request, res: Response) => {
   try {
-    const { statusCode, data } = await userService.getUserById(req);
+    const { statusCode, data } = await userService.getOne(req);
     res.status(statusCode).json(data);
   } catch (error) {
     logger.error(`user controller - getUserById\n ${error}`);
@@ -25,7 +25,7 @@ export const getUserById = async (req: Request, res: Response) => {
 
 export const createUser = async (req: Request, res: Response) => {
   try {
-    const { statusCode, data } = await userService.createUser(req);
+    const { statusCode, data } = await userService.create(req);
     res.status(statusCode).json(data);
   } catch (error) {
     logger.error(`user controller - createUser\n ${error}`);
@@ -35,7 +35,7 @@ export const createUser = async (req: Request, res: Response) => {
 
 export const updateUser = async (req: Request, res: Response) => {
   try {
-    const { statusCode, data } = await userService.updateUser(req);
+    const { statusCode, data } = await userService.update(req);
     res.status(statusCode).json(data);
   } catch (error) {
     logger.error(`user controller - updateUser\n ${error}`);
@@ -45,7 +45,7 @@ export const updateUser = async (req: Request, res: Response) => {
 
 export const deleteUser = async (req: Request, res: Response) => {
   try {
-    const { statusCode, data } = await userService.deleteUser(req);
+    const { statusCode, data } = await userService.delete(req);
     res.status(statusCode).json(data);
   } catch (error) {
     logger.error(`user controller - deleteUser\n ${error}`);

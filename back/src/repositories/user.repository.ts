@@ -2,25 +2,25 @@ import { IUser } from "../interfaces";
 import { UserModel } from "../models";
 
 class UserRepository {
-  async getUsers() {
+  async getAll() {
     return UserModel.find().exec();
   }
 
-  async getUserById(id: string) {
+  async getOne(id: string) {
     return UserModel.findById(id).exec();
   }
 
-  async createUser(user: IUser) {
+  async create(user: IUser) {
     return UserModel.create(user);
   }
 
-  async updateUser(id: string, updatedUser: any) {
-    return UserModel.findByIdAndUpdate(id, updatedUser, {
+  async update(id: string, updateUser: any) {
+    return UserModel.findByIdAndUpdate(id, updateUser, {
       new: true,
     }).exec();
   }
 
-  async deleteUser(id: string): Promise<IUser | null> {
+  async delete(id: string): Promise<IUser | null> {
     return UserModel.findByIdAndRemove(id).exec();
   }
 }

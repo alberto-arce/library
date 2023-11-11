@@ -17,15 +17,17 @@ interface IUpdateMember {
 }
 
 interface IService {
-  getMembers: () => Promise<IResponse>;
-  createMember: (newMember: ICreateMember) => Promise<IResponse>;
-  updateMember: (_id: string, updateMember: IUpdateMember) => Promise<IResponse>;
-  deleteMember: (_id: string) => Promise<IResponse>;
+  getAll: () => Promise<IResponse>;
+  create: (newMember: ICreateMember) => Promise<IResponse>;
+  update: (_id: string, updateMember: IUpdateMember) => Promise<IResponse>;
+  delete: (_id: string) => Promise<IResponse>;
+  changeStatus: (_id: string) => Promise<IResponse>;
 }
 
 export const memberService: IService = {
-  getMembers: () => api.get("/members"),
-  createMember: (newMember: ICreateMember) => api.post("/members", newMember),
-  updateMember: (_id: string, updateMember: IUpdateMember) => api.put(`/members/${_id}`, updateMember),
-  deleteMember: (_id: string) => api.delete(`/members/${_id}`),
+  getAll: () => api.get("/members"),
+  create: (newMember: ICreateMember) => api.post("/members", newMember),
+  update: (_id: string, updateMember: IUpdateMember) => api.put(`/members/${_id}`, updateMember),
+  delete: (_id: string) => api.delete(`/members/${_id}`),
+  changeStatus: (_id: string) => api.put(`/members/change-status/${_id}`),
 };

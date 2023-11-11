@@ -1,9 +1,24 @@
 export interface IBorrow {
   _id: string;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  member: any;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  book: any;
+  member: IMember;
+  book: IBook;
+  stock: number;
   createdAt: Date;
   deletedAt: Date | null;
+}
+
+interface IMember {
+  _id: string;
+  name: string;
+  status: string;
+}
+
+interface IBook {
+  _id: string;
+  title: string;
+  author: string;
+  isbn: string;
+  stock: number;
+  createdAt: Date;
+  updatedAt: Date;
 }

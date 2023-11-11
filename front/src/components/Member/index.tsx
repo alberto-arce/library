@@ -14,20 +14,37 @@ import { AddItemDialog } from "../AddItemDialog";
 import { EditItemDialog } from "../EditItemDialog";
 import { IMember } from "./interfaces";
 import { memberService } from "../../services";
+import { Alert } from "../Alert";
 
 export const Member = () => {
   const [members, setMembers] = useState<IMember[] | undefined>([]);
   const [isAddingMember, setisAddingMember] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editMember, setEditMember] = useState<IMember | null>(null);
+  const [showAlert, setShowAlert] = useState<string | boolean>(false);
 
   useEffect(() => {
     const fetchData = async () => {
-      const response = await memberService.getMembers();
+      const response = await memberService.getAll();
       setMembers(response.data);
     };
     fetchData();
   }, []);
+
+  const handleSaveNewMember = async (newMember: IMember) => {
+    try {
+      const response = await memberService.create(newMember);
+      if (response.success) {
+        const response = await memberService.getAll();
+        setMembers(response.data);
+      } else {
+        setShowAlert("No se pudo agregar");
+      }
+    } catch (error) {
+      setShowAlert("Hubo un error. Intentarlo más tarde");
+    }
+    handleCloseAddMemberDialog();
+  };
 
   const handleEdit = (member: IMember) => {
     setEditMember(member);
@@ -36,34 +53,48 @@ export const Member = () => {
 
   const handleSaveEdit = async (editedMember: IMember) => {
     try {
-      const response = await memberService.updateMember(
+      const response = await memberService.update(
         editedMember._id,
         editedMember
       );
       if (response.success) {
-        const updatedMembers = await memberService.getMembers();
+        const updatedMembers = await memberService.getAll();
         setMembers(updatedMembers.data);
       } else {
-        console.error("Failed to update member.");
+        setShowAlert("No se pudo actualizar");
       }
     } catch (error) {
-      console.error("Error updating member:", error);
+      setShowAlert("Hubo un error. Intentarlo más tarde");
     }
     setIsEditing(false);
   };
 
   const handleDelete = async (_id: string) => {
     try {
-      const response = await memberService.deleteMember(_id);
+      const response = await memberService.delete(_id);
       if (response.success) {
         setMembers((prevMembers) =>
           prevMembers?.filter((member) => member._id !== _id)
         );
       } else {
-        console.error("Failed to delete user.");
+        setShowAlert("No se pudo eliminar");
       }
     } catch (error) {
-      console.error("Error deleting user:", error);
+      setShowAlert("Hubo un error. Intentarlo más tarde");
+    }
+  };
+
+  const handleActivate = async (_id: string) => {
+    try {
+      const response = await memberService.changeStatus(_id);
+      if (response.success) {
+        const updatedMembers = await memberService.getAll();
+        setMembers(updatedMembers.data);
+      } else {
+        setShowAlert("No se pudo activar");
+      }
+    } catch (error) {
+      setShowAlert("Hubo un error. Intentarlo más tarde");
     }
   };
 
@@ -73,21 +104,6 @@ export const Member = () => {
 
   const handleCloseAddMemberDialog = () => {
     setisAddingMember(false);
-  };
-
-  const handleSaveNewMember = async (newMember: IMember) => {
-    try {
-      const response = await memberService.createMember(newMember);
-      if (response.success) {
-        const response = await memberService.getMembers();
-        setMembers(response.data);
-      } else {
-        console.error("Failed to create member.");
-      }
-    } catch (error) {
-      console.error("Error creating member:", error);
-    }
-    handleCloseAddMemberDialog();
   };
 
   return (
@@ -116,19 +132,35 @@ export const Member = () => {
                 <TableCell>{member.status.toUpperCase()}</TableCell>
                 <TableCell>
                   <Button
+                    disabled={
+                      member.status.toLowerCase() === "bloqueado" ? true : false
+                    }
                     variant="outlined"
                     color="primary"
                     onClick={() => handleEdit(member)}
                     sx={{ marginRight: 2 }}
                   >
-                    Edit
+                    Editar
                   </Button>
                   <Button
+                    disabled={
+                      member.status.toLowerCase() === "bloqueado" ? true : false
+                    }
                     variant="outlined"
                     color="secondary"
                     onClick={() => handleDelete(member._id)}
                   >
-                    Delete
+                    Eliminar
+                  </Button>
+                  <Button
+                    disabled={
+                      member.status.toLowerCase() === "activado" ? true : false
+                    }
+                    variant="outlined"
+                    color="secondary"
+                    onClick={() => handleActivate(member._id)}
+                  >
+                    Activar
                   </Button>
                 </TableCell>
               </TableRow>
@@ -151,6 +183,9 @@ export const Member = () => {
         fields={[{ label: "Nombre", value: "name" }]}
         initialData={editMember}
       />
+      {showAlert && typeof showAlert === "string" && (
+        <Alert message={showAlert} onClose={() => setShowAlert(false)} />
+      )}
     </Container>
   );
 };

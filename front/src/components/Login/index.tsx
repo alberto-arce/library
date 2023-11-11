@@ -11,8 +11,7 @@ interface LoginProps {
 }
 
 export const Login: React.FC<LoginProps> = ({ onLogin }) => {
-  const [showAlert, setShowAlert] = useState(false);
-  const [name, setName] = useState("");
+  const [showAlert, setShowAlert] = useState<string | boolean>(false);  const [name, setName] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
@@ -38,7 +37,7 @@ export const Login: React.FC<LoginProps> = ({ onLogin }) => {
         onLogin(true);
         navigate("/");
       } else {
-        setShowAlert(true);
+        setShowAlert('Usuario y/o contraseña incorrectas');
       }
     } catch (error) {
       setShowAlert(true);
@@ -79,11 +78,8 @@ export const Login: React.FC<LoginProps> = ({ onLogin }) => {
             Ingresar
           </Button>
         </form>
-        {showAlert && (
-          <Alert
-            message="User does not exist. Please register."
-            onClose={() => setShowAlert(false)}
-          />
+        {showAlert && typeof showAlert === "string" && (
+          <Alert message={showAlert} onClose={() => setShowAlert(false)} />
         )}
       </Paper>
     </Container>

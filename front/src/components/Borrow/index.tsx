@@ -12,32 +12,31 @@ import {
 } from "@mui/material";
 
 import { IBorrow } from "./interfaces";
+import { Alert } from "../Alert";
 
 export const Borrow = () => {
   const [borrows, setBorrows] = useState<IBorrow[] | undefined>([]);
+  const [showAlert, setShowAlert] = useState<string | boolean>(false);
 
   useEffect(() => {
     const fetchData = async () => {
-      const response = await borrowService.getBorrows();
+      const response = await borrowService.getAll();
       setBorrows(response?.data);
     };
     fetchData();
   }, []);
 
-  /**
-   * TODO: alert modal responses
-   */
-  const handleDelete = async (_id: string) => {
+  const handleDelete = async (borrow: IBorrow) => {
     try {
-      const response = await borrowService.deleteBorrow(_id);
+      const response = await borrowService.delete(borrow._id, borrow.stock);
       if (response.success) {
-        const response = await borrowService.getBorrows();
+        const response = await borrowService.getAll();
         setBorrows(response.data);
       } else {
-        console.error("Failed to delete borrow.");
+        setShowAlert("No se pudo recibir");
       }
     } catch (error) {
-      console.error("Error deleting borrow:", error);
+      setShowAlert("Hubo un error. Intentarlo más tarde");
     }
   };
 
@@ -49,6 +48,7 @@ export const Borrow = () => {
             <TableRow>
               <TableCell>Libro</TableCell>
               <TableCell>Socio</TableCell>
+              <TableCell>Cantidad</TableCell>
               <TableCell>Fecha de préstamo</TableCell>
               <TableCell>Fecha de entrega</TableCell>
               <TableCell>Acciones</TableCell>
@@ -59,6 +59,7 @@ export const Borrow = () => {
               <TableRow key={index}>
                 <TableCell>{borrow.book.title}</TableCell>
                 <TableCell>{borrow.member.name}</TableCell>
+                <TableCell>{borrow.stock}</TableCell>
                 <TableCell>
                   {new Date(borrow.createdAt).toLocaleDateString()}
                 </TableCell>
@@ -72,7 +73,7 @@ export const Borrow = () => {
                     disabled={borrow.deletedAt ? true : false}
                     variant="outlined"
                     color="secondary"
-                    onClick={() => handleDelete(borrow._id)}
+                    onClick={() => handleDelete(borrow)}
                   >
                     Recibido
                   </Button>
@@ -82,6 +83,9 @@ export const Borrow = () => {
           </TableBody>
         </Table>
       </Paper>
+      {showAlert && typeof showAlert === "string" && (
+        <Alert message={showAlert} onClose={() => setShowAlert(false)} />
+      )}
     </Container>
   );
 };

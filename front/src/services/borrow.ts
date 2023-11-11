@@ -11,16 +11,19 @@ interface IResponse {
 interface ICreateBorrow {
   memberId: string;
   bookId: string | undefined;
+  numberSelectedBooks: number;
+  newStock: number;
 }
 
 interface IService {
-  getBorrows: () => Promise<IResponse>;
-  createBorrow: (newBorrow: ICreateBorrow) => Promise<IResponse>;
-  deleteBorrow: (_id: string) => Promise<IResponse>;
+  getAll: () => Promise<IResponse>;
+  create: (newBorrow: ICreateBorrow) => Promise<IResponse>;
+  delete: (_id: string, stock: number) => Promise<IResponse>;
 }
 
 export const borrowService: IService = {
-  getBorrows: () => api.get("/borrows"),
-  createBorrow: (newBorrow) => api.post("/borrows", newBorrow),
-  deleteBorrow: (_id: string) => api.delete(`/borrows/${_id}`),
+  getAll: () => api.get("/borrows"),
+  create: (newBorrow) => api.post("/borrows", newBorrow),
+  delete: (_id: string, stock: number) =>
+    api.delete(`/borrows/${_id}`, { data: { stock } }),
 };

@@ -5,7 +5,7 @@ import { logger } from "../logs";
 
 export const getBooks = async (_: Request, res: Response) => {
   try {
-    const { statusCode, data } = await bookService.getBooks();
+    const { statusCode, data } = await bookService.getAll();
     res.status(statusCode).json(data);
   } catch (error) {
     logger.error(`book controller - getBooks\n ${error}`);
@@ -15,7 +15,7 @@ export const getBooks = async (_: Request, res: Response) => {
 
 export const getBookById = async (req: Request, res: Response) => {
   try {
-    const { statusCode, data } = await bookService.getBookById(req);
+    const { statusCode, data } = await bookService.getOne(req);
     res.status(statusCode).json(data);
   } catch (error) {
     logger.error(`book controller - geBookById\n ${error}`);
@@ -25,7 +25,7 @@ export const getBookById = async (req: Request, res: Response) => {
 
 export const createBook = async (req: Request, res: Response) => {
   try {
-    const { statusCode, data } = await bookService.createBook(req);
+    const { statusCode, data } = await bookService.create(req);
     res.status(statusCode).json(data);
   } catch (error) {
     logger.error(`book controller - createBook\n ${error}`);
@@ -35,7 +35,7 @@ export const createBook = async (req: Request, res: Response) => {
 
 export const updateBook = async (req: Request, res: Response) => {
   try {
-    const { statusCode, data } = await bookService.updateBook(req);
+    const { statusCode, data } = await bookService.update(req);
     res.status(statusCode).json(data);
   } catch (error) {
     logger.error(`book controller - updateBook\n ${error}`);
@@ -45,7 +45,7 @@ export const updateBook = async (req: Request, res: Response) => {
 
 export const deleteBook = async (req: Request, res: Response) => {
   try {
-    const { statusCode, data } = await bookService.deleteBook(req);
+    const { statusCode, data } = await bookService.delete(req);
     res.status(statusCode).json(data);
   } catch (error) {
     logger.error(`book controller - deleteBook\n ${error}`);

@@ -4,7 +4,7 @@ export class Member {
   @prop({ required: true, type: String })
   name!: string;
 
-  @prop({ default: 'active', type: String})
+  @prop({ default: 'activado', type: String})
   status!: string;
 
   @prop({ default: Date.now, type: String})

@@ -9,88 +9,82 @@ import {
 import { BorrowModel } from "../models";
 
 class BorrowService {
-  async getBorrows() {
-    const borrows = await borrowRepository.getBorrows();
+  async getAll() {
+    const borrows = await borrowRepository.getAll();
     if (!borrows.length) {
-      return {
-        statusCode: 404,
-        data: {
-          error: "Borrows not found",
-          success: false,
-        },
-      };
+      return this.createResponse(404, { error: "Borrows not found" }, false);
     }
-    return {
-      statusCode: 200,
-      data: {
-        data: borrows,
-        success: true,
-      },
-    };
+    return this.createResponse(200, { data: borrows }, true);
   }
 
-  async createBorrow(req: Request) {
-    const { memberId, bookId } = req.body;
-    const book = await bookRepository.getBookById(bookId);
-    const member = await memberRepository.getMemberById(memberId);
+  async create(req: Request) {
+    const { memberId, bookId, numberSelectedBooks, newStock } = req.body;
+    const book = await bookRepository.getOne(bookId);
+    const member = await memberRepository.getOne(memberId);
     if (!member || !book) {
-      return {
-        statusCode: 404,
-        data: {
-          error: "Member and/or book not found",
-          success: false,
-        },
-      };
+      return this.createResponse(
+        404,
+        { error: "Member and/or book not found" },
+        false
+      );
     }
     const borrow = new BorrowModel({
       member: member._id,
       book: book._id,
+      stock: numberSelectedBooks,
     });
-    const createdBorrow = await borrowRepository.createBorrow(borrow);
+    const createdBorrow = await borrowRepository.create(borrow);
     if (!createdBorrow) {
-      return {
-        statusCode: 500,
-        data: {
-          error: "Borrow was not create",
-          success: false,
-        },
-      };
+      return this.createResponse(
+        500,
+        { error: "Borrow was not create" },
+        false
+      );
     }
-    return {
-      statusCode: 201,
-      data: {
-        data: await createdBorrow.populate("member book"),
-        success: true,
-      },
-    };
+    await bookRepository.update(book._id.toString(), { stock: newStock });
+    return this.createResponse(
+      201,
+      { data: await createdBorrow.populate("member book") },
+      true
+    );
   }
 
-  async deleteBorrow(req: Request) {
+  async delete(req: Request) {
     const { id } = req.params;
     if (!mongoose.Types.ObjectId.isValid(id)) {
-      return {
-        statusCode: 404,
-        data: {
-          error: "Invalid ID",
-          success: false,
-        },
-      };
+      return this.createResponse(404, { error: "Invalid ID" }, false);
     }
-    const deletedBorrow = await borrowRepository.deleteBorrow(id);
+    const borrow = await borrowRepository.getOne(id);
+    const now = Date.now();
+    const oneMinuteOffset = 60000;
+    if (
+      borrow &&
+      borrow.createdAt &&
+      borrow.createdAt.getTime() < now - oneMinuteOffset
+    ) {
+      await memberRepository.changeStatus(
+        borrow.member._id.toString(),
+        "bloqueado"
+      );
+    }
+    const deletedBorrow = await borrowRepository.delete(id, now);
     if (!deletedBorrow) {
-      return {
-        statusCode: 404,
-        data: {
-          error: "Borrow not found",
-          success: false,
-        },
-      };
+      return this.createResponse(404, { error: "Borrow not found" }, false);
     }
+    if (borrow && borrow.book) {
+      await bookRepository.update(borrow.book._id.toString(), {
+        stock: await borrow?.getBookStock() + borrow.stock,
+      });
+    }
+    return this.createResponse(200, { data: deletedBorrow }, true);
+  }
+
+  private createResponse(statusCode: number, data: any, success: boolean) {
     return {
-      statusCode: 200,
+      statusCode,
       data: {
-        data: deletedBorrow,
-        success: true,
+        ...data,
+        success,
       },
     };
   }

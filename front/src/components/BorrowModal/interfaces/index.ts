@@ -10,6 +10,7 @@ interface IBook {
   title: string;
   author: string;
   isbn: string;
+  stock: number;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -18,4 +19,5 @@ export interface BorrowModalProps {
   isOpen: boolean;
   onClose: () => void;
   selectedBook: IBook | null;
+  onBookBorrowed: () => void;
 }

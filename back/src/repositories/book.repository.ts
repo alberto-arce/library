@@ -2,25 +2,25 @@ import { IBook } from "../interfaces";
 import { BookModel } from "../models";
 
 class BookRepository {
-  async getBooks() {
+  async getAll() {
     return BookModel.find().exec();
   }
 
-  async getBookById(id: string) {
+  async getOne(id: string) {
     return BookModel.findById(id).exec();
   }
 
-  async createBook(book: IBook) {
+  async create(book: IBook) {
     return BookModel.create(book);
   }
 
-  async updateBook(id: string, updatedBook: any) {
-    return BookModel.findByIdAndUpdate(id, updatedBook, {
+  async update(id: string, updateBook: any) {
+    return BookModel.findByIdAndUpdate(id, updateBook, {
       new: true,
     }).exec();
   }
 
-  async deleteBook(id: string): Promise<IBook | null> {
+  async delete(id: string): Promise<IBook | null> {
     return BookModel.findByIdAndRemove(id).exec();
   }
 }

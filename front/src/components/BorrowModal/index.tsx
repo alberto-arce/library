@@ -17,19 +17,22 @@ import { memberService } from "../../services";
 import { borrowService } from "../../services";
 import { BorrowModalProps, IMember } from "./interfaces";
 import "./index.css";
+import { Alert } from "../Alert";
 
 export const BorrowModal: React.FC<BorrowModalProps> = ({
   isOpen,
   onClose,
   selectedBook,
+  onBookBorrowed,
 }) => {
   const [members, setMembers] = useState<IMember[] | undefined>([]);
-  const [numberSelectedBooks, setNumberSelectedBooks] = useState<string>("1");
+  const [numberSelectedBooks, setNumberSelectedBooks] = useState<number>(1);
   const [selectedMember, setSelectedMember] = useState<IMember | null>(null);
+  const [showAlert, setShowAlert] = useState<string | boolean>(false);
 
   useEffect(() => {
     const fetchData = async () => {
-      const response = await memberService.getMembers();
+      const response = await memberService.getAll();
       setMembers(response?.data);
     };
     fetchData();
@@ -43,78 +46,95 @@ export const BorrowModal: React.FC<BorrowModalProps> = ({
     onClose();
   };
 
-  /**
-   * TODO: add modal
-   */
-  const handleConfirmBorrow = () => {
-    if (selectedMember) {
-      const newBorrow = {
+  const handleConfirmBorrow = async () => {
+    try {
+      if (selectedBook && numberSelectedBooks > selectedBook?.stock) {
+        setShowAlert("Stock insuficiente");
+        return;
+      }
+      if (!selectedMember) {
+        return;
+      }
+      const response = await borrowService.create({
         memberId: selectedMember._id,
         bookId: selectedBook?._id,
-      };
-      borrowService.createBorrow(newBorrow);
+        numberSelectedBooks,
+        newStock: (selectedBook?.stock ?? 0) -  numberSelectedBooks ,
+      });
+      if (response.success) {
+        setShowAlert("El préstamo fue realizado");
+        onBookBorrowed();
+      } else {
+        setShowAlert("El préstamo no fue realizado");
+      }
       closeBorrowModal();
+    } catch (error) {
+      setShowAlert("Hubo un error. Intentarlo más tarde");
     }
   };
 
   return (
-    <Modal open={isOpen} onClose={closeBorrowModal}>
-      <div className="modal-container">
-        {selectedBook && (
-          <div>
-            <Typography
-              variant="h6"
-              color="textSecondary"
-              style={{ marginBottom: "5px" }}
-            >
-              Selected Book: {selectedBook.title}
-            </Typography>
-          </div>
-        )}
-        <Box className="table-container">
-          <Paper>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell className="sticky-header">Name</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {members?.map((member, index) => (
-                  <TableRow
-                    key={index}
-                    className={
-                      selectedMember && selectedMember._id === member._id
-                        ? "selected-row"
-                        : ""
-                    }
-                    onClick={() => handleChooseMember(member)}
-                  >
-                    <TableCell>{member.name}</TableCell>
+    <>
+      <Modal open={isOpen} onClose={closeBorrowModal}>
+        <div className="modal-container">
+          {selectedBook && (
+            <div>
+              <Typography
+                variant="h6"
+                color="textSecondary"
+                style={{ marginBottom: "5px" }}
+              >
+                Selected Book: {selectedBook.title}
+              </Typography>
+            </div>
+          )}
+          <Box className="table-container">
+            <Paper>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell className="sticky-header">Name</TableCell>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </Paper>
-        </Box>
-        <TextField
-          label="Cantidad de libros"
-          variant="outlined"
-          fullWidth
-          type="number"
-          value={numberSelectedBooks}
-          onChange={(e) => setNumberSelectedBooks(e.target.value)}
-          style={{ marginTop: "20px", marginBottom: "20px" }}
-        />
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={handleConfirmBorrow}
-        >
-          Confirmar
-        </Button>
-      </div>
-    </Modal>
+                </TableHead>
+                <TableBody>
+                  {members?.map((member, index) => (
+                    <TableRow
+                      key={index}
+                      className={
+                        selectedMember && selectedMember._id === member._id
+                          ? "selected-row"
+                          : ""
+                      }
+                      onClick={() => handleChooseMember(member)}
+                    >
+                      <TableCell>{member.name}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </Paper>
+          </Box>
+          <TextField
+            label="Cantidad de libros"
+            variant="outlined"
+            fullWidth
+            type="number"
+            value={numberSelectedBooks}
+            onChange={(e) => setNumberSelectedBooks(Number(e.target.value))}
+            style={{ marginTop: "20px", marginBottom: "20px" }}
+          />
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleConfirmBorrow}
+          >
+            Confirmar
+          </Button>
+        </div>
+      </Modal>
+      {showAlert && typeof showAlert === "string" && (
+        <Alert message={showAlert} onClose={() => setShowAlert(false)} />
+      )}
+    </>
   );
 };
-

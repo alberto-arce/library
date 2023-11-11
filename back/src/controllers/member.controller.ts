@@ -5,7 +5,7 @@ import { logger } from "../logs";
 
 export const getMembers = async (_: Request, res: Response) => {
   try {
-    const { statusCode, data } = await memberService.getMembers();
+    const { statusCode, data } = await memberService.getAll();
     res.status(statusCode).json(data);
   } catch (error) {
     logger.error(`member controller - getMember\n ${error}`);
@@ -15,7 +15,7 @@ export const getMembers = async (_: Request, res: Response) => {
 
 export const createMember = async (req: Request, res: Response) => {
   try {
-    const { statusCode, data } = await memberService.createMember(req);
+    const { statusCode, data } = await memberService.create(req);
     res.status(statusCode).json(data);
   } catch (error) {
     logger.error(`member controller - createMember\n ${error}`);
@@ -25,7 +25,7 @@ export const createMember = async (req: Request, res: Response) => {
 
 export const updateMember = async (req: Request, res: Response) => {
   try {
-    const { statusCode, data } = await memberService.updateMember(req);
+    const { statusCode, data } = await memberService.update(req);
     res.status(statusCode).json(data);
   } catch (error) {
     logger.error(`member controller - updateMember\n ${error}`);
@@ -35,7 +35,17 @@ export const updateMember = async (req: Request, res: Response) => {
 
 export const deleteMember = async (req: Request, res: Response) => {
   try {
-    const { statusCode, data } = await memberService.deleteMember(req);
+    const { statusCode, data } = await memberService.delete(req);
+    res.status(statusCode).json(data);
+  } catch (error) {
+    logger.error(`member controller - deleteMember\n ${error}`);
+    res.status(500).json({ success: false, data: "Internal Server Error" });
+  }
+};
+
+export const changeStatus = async (req: Request, res: Response) => {
+  try {
+    const { statusCode, data } = await memberService.changeStatus(req);
     res.status(statusCode).json(data);
   } catch (error) {
     logger.error(`member controller - deleteMember\n ${error}`);

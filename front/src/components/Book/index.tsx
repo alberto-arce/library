@@ -11,10 +11,11 @@ import {
 } from "@mui/material";
 
 import { AddItemDialog } from "../AddItemDialog";
-import { BorrowModal } from "../BorrowModal"; // Import the BorrowModal component
+import { BorrowModal } from "../BorrowModal";
 import { IBook } from "./interfaces";
 import { bookService } from "../../services";
 import { EditItemDialog } from "../EditItemDialog";
+import { Alert } from "../Alert";
 
 export const Book = () => {
   const [selectedBook, setSelectedBook] = useState<IBook | null>(null);
@@ -23,10 +24,11 @@ export const Book = () => {
   const [isAddingBook, setIsAddingBook] = useState<boolean>(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editBook, setEditBook] = useState<IBook | null>(null);
+  const [showAlert, setShowAlert] = useState<string | boolean>(false);
 
   useEffect(() => {
     const fetchData = async () => {
-      const response = await bookService.getBooks();
+      const response = await bookService.getAll();
       setBooks(response?.data);
     };
     fetchData();
@@ -34,15 +36,15 @@ export const Book = () => {
 
   const handleSaveNewBook = async (newBook: IBook) => {
     try {
-      const response = await bookService.createBook(newBook);
+      const response = await bookService.create(newBook);
       if (response.success) {
-        const response = await bookService.getBooks();
+        const response = await bookService.getAll();
         setBooks(response?.data);
       } else {
-        console.error("Failed to create book.");
+        setShowAlert("No se pudo agregar");
       }
     } catch (error) {
-      console.error("Error creating book:", error);
+      setShowAlert("Hubo un error. Intentarlo más tarde");
     }
     handleCloseAddBookDialog();
   };
@@ -54,29 +56,29 @@ export const Book = () => {
 
   const handleSaveEdit = async (editedBook: IBook) => {
     try {
-      const response = await bookService.updateBook(editedBook._id, editedBook);
+      const response = await bookService.update(editedBook._id, editedBook);
       if (response.success) {
-        const updatedBooks = await bookService.getBooks();
+        const updatedBooks = await bookService.getAll();
         setBooks(updatedBooks.data);
       } else {
-        console.error("Failed to update book.");
+        setShowAlert("No se pudo actualizar");
       }
     } catch (error) {
-      console.error("Error updating book:", error);
+      setShowAlert("Hubo un error. Intentarlo más tarde");
     }
     setIsEditing(false);
   };
 
   const handleDelete = async (_id: string) => {
     try {
-      const response = await bookService.deleteBook(_id);
+      const response = await bookService.delete(_id);
       if (response.success) {
         setBooks((prevBooks) => prevBooks?.filter((book) => book._id !== _id));
       } else {
-        console.error("Failed to delete book.");
+        setShowAlert("No se pudo eliminar");
       }
     } catch (error) {
-      console.error("Error deleting book:", error);
+      setShowAlert("Hubo un error. Intentarlo más tarde");
     }
   };
 
@@ -91,11 +93,15 @@ export const Book = () => {
   const openBorrowModal = (book: IBook) => {
     setSelectedBook(book);
     setIsBorrowModalOpen(true);
-    setIsBorrowModalOpen(true);
   };
 
   const closeBorrowModal = () => {
     setIsBorrowModalOpen(false);
+  };
+
+  const handleBookBorrowed = async () => {
+    const response = await bookService.getAll();
+    setBooks(response?.data);
   };
 
   return (
@@ -130,28 +136,28 @@ export const Book = () => {
                 <TableCell>{book.stock}</TableCell>
                 <TableCell>
                   <Button
+                    disabled={book.stock ? false : true}
                     variant="outlined"
                     color="primary"
                     onClick={() => openBorrowModal(book)}
                     sx={{ marginRight: 2 }}
                   >
-                    Borrow
+                    Prestar
                   </Button>
-
                   <Button
                     variant="outlined"
                     color="primary"
                     onClick={() => handleEdit(book)}
                     sx={{ marginRight: 2 }}
                   >
-                    Edit
+                    Editar
                   </Button>
                   <Button
                     variant="outlined"
                     color="secondary"
                     onClick={() => handleDelete(book._id)}
                   >
-                    Delete
+                    Eliminar
                   </Button>
                 </TableCell>
               </TableRow>
@@ -189,7 +195,11 @@ export const Book = () => {
         isOpen={isBorrowModalOpen}
         onClose={closeBorrowModal}
         selectedBook={selectedBook}
+        onBookBorrowed={handleBookBorrowed}
       />
+      {showAlert && typeof showAlert === "string" && (
+        <Alert message={showAlert} onClose={() => setShowAlert(false)} />
+      )}
     </Container>
   );
 };

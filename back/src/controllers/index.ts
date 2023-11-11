@@ -17,6 +17,7 @@ export {
   createMember,
   updateMember,
   deleteMember,
+  changeStatus
 } from "./member.controller";
 export { login } from "./auth.controller";
 export { getBorrows, createBorrow, deleteBorrow } from "./borrow.controller";

@@ -5,7 +5,7 @@ import { logger } from "../logs";
 
 export const getBorrows = async (_: Request, res: Response) => {
   try {
-    const { statusCode, data } = await borrowService.getBorrows();
+    const { statusCode, data } = await borrowService.getAll();
     res.status(statusCode).json(data);
   } catch (error) {
     logger.error(`borrow controller - getBorrows\n ${error}`);
@@ -15,7 +15,7 @@ export const getBorrows = async (_: Request, res: Response) => {
 
 export const createBorrow = async (req: Request, res: Response) => {
   try {
-    const { statusCode, data } = await borrowService.createBorrow(req);
+    const { statusCode, data } = await borrowService.create(req);
     res.status(statusCode).json(data);
   } catch (error) {
     logger.error(`borrow controller - createBorrow\n ${error}`);
@@ -25,7 +25,7 @@ export const createBorrow = async (req: Request, res: Response) => {
 
 export const deleteBorrow = async (req: Request, res: Response) => {
   try {
-    const { statusCode, data } = await borrowService.deleteBorrow(req);
+    const { statusCode, data } = await borrowService.delete(req);
     res.status(statusCode).json(data);
   } catch (error) {
     logger.error(`borrow controller - deleteBorrow\n ${error}`);

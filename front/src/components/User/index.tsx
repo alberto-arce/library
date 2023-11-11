@@ -14,16 +14,18 @@ import { AddItemDialog } from "../AddItemDialog";
 import { IUser } from "./interfaces";
 import { userService } from "../../services";
 import { EditItemDialog } from "../EditItemDialog";
+import { Alert } from "../Alert";
 
 export const User = () => {
   const [users, setUsers] = useState<IUser[] | undefined>([]);
   const [isAddingUser, setIsAddingUser] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editUser, setEditUser] = useState<IUser | null>(null);
+  const [showAlert, setShowAlert] = useState<string | boolean>(false);
 
   useEffect(() => {
     const fetchData = async () => {
-      const response = await userService.getUsers();
+      const response = await userService.getAll();
       setUsers(response?.data);
     };
     fetchData();
@@ -31,15 +33,15 @@ export const User = () => {
 
   const handleSaveNewUser = async (newUser: IUser) => {
     try {
-      const response = await userService.createUser(newUser);
+      const response = await userService.create(newUser);
       if (response.success) {
-        const response = await userService.getUsers();
+        const response = await userService.getAll();
         setUsers(response?.data);
       } else {
-        console.error("Failed to create user.");
+        setShowAlert("No se pudo agregar");
       }
     } catch (error) {
-      console.error("Error creating user:", error);
+      setShowAlert("Hubo un error. Intentarlo más tarde");
     }
     handleCloseAddUserDialog();
   };
@@ -51,32 +53,29 @@ export const User = () => {
 
   const handleSaveEdit = async (editedUser: IUser) => {
     try {
-      const response = await userService.updateUser(
-        editedUser._id,
-        editedUser
-      );
+      const response = await userService.update(editedUser._id, editedUser);
       if (response.success) {
-        const updatedUsers = await userService.getUsers();
+        const updatedUsers = await userService.getAll();
         setUsers(updatedUsers.data);
       } else {
-        console.error("Failed to update user.");
+        setShowAlert("No se pudo actualizar");
       }
     } catch (error) {
-      console.error("Error updating user:", error);
+      setShowAlert("Hubo un error. Intentarlo más tarde");
     }
     setIsEditing(false);
   };
 
   const handleDelete = async (_id: string) => {
     try {
-      const response = await userService.deleteUser(_id);
+      const response = await userService.delete(_id);
       if (response.success) {
         setUsers((prevUsers) => prevUsers?.filter((user) => user._id !== _id));
       } else {
-        console.error("Failed to delete user.");
+        setShowAlert("No se pudo eliminar");
       }
     } catch (error) {
-      console.error("Error deleting user:", error);
+      setShowAlert("Hubo un error. Intentarlo más tarde");
     }
   };
 
@@ -149,6 +148,9 @@ export const User = () => {
         fields={[{ label: "Nombre", value: "name" }]}
         initialData={editUser}
       />
+      {showAlert && typeof showAlert === "string" && (
+        <Alert message={showAlert} onClose={() => setShowAlert(false)} />
+      )}
     </Container>
   );
 };
