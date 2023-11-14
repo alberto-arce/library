@@ -102,6 +102,7 @@ export const User = () => {
           <TableHead>
             <TableRow>
               <TableCell>Nombre</TableCell>
+              <TableCell>Acciones</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>

@@ -84,7 +84,7 @@ export const BorrowModal: React.FC<BorrowModalProps> = ({
                 color="textSecondary"
                 style={{ marginBottom: "5px" }}
               >
-                Selected Book: {selectedBook.title}
+                Libro seleccionado: {selectedBook.title}
               </Typography>
             </div>
           )}
@@ -93,7 +93,7 @@ export const BorrowModal: React.FC<BorrowModalProps> = ({
               <Table>
                 <TableHead>
                   <TableRow>
-                    <TableCell className="sticky-header">Name</TableCell>
+                    <TableCell className="sticky-header">Socios</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>

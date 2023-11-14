@@ -48,7 +48,7 @@ export const EditItemDialog = ({
               value={editedData[field.value] || ""}
               onChange={(e) => handleFieldChange(field.value, e.target.value)}
             />
-            <FormHelperText>Enter {field.label}</FormHelperText>
+            <FormHelperText>Ingresar {field.label}</FormHelperText>
           </FormControl>
         ))}
       </DialogContent>

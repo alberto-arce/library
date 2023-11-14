@@ -57,8 +57,8 @@ export const Borrow = () => {
           <TableBody>
             {borrows?.map((borrow, index) => (
               <TableRow key={index}>
-                <TableCell>{borrow.book.title}</TableCell>
-                <TableCell>{borrow.member.name}</TableCell>
+                <TableCell>{borrow?.book?.title}</TableCell>
+                <TableCell>{borrow?.member?.name}</TableCell>
                 <TableCell>{borrow.stock}</TableCell>
                 <TableCell>
                   {new Date(borrow.createdAt).toLocaleDateString()}
