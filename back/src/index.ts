@@ -11,12 +11,13 @@ import {
 } from "./routes";
 import { connectToDatabase } from "./database";
 import { logger } from "./logs";
-import { authentication } from "./middlewares";
+import { authentication, authorization } from "./middlewares";
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 app.use("/v1", authRoutes);
+app.use(authorization(['admin', 'employee']));
 app.use("/v1", authentication, userRoutes);
 app.use("/v1", bookRoutes);
 app.use("/v1", borrowRoutes);

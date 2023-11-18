@@ -27,12 +27,11 @@ class UserService {
 
   async create(req: Request) {
     const { name, password, role } = req.body;
-    const newUser = {
+    const createdUser = await userRepository.create({
       name,
       password: await bcrypt.hash(password, 10),
       role: role ?? "employee",
-    };
-    const createdUser = await userRepository.create(newUser);
+    });
     if (!createdUser) {
       return this.createResponse(500, { error: "User was not created" }, false);
     }
@@ -44,9 +43,8 @@ class UserService {
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return this.createResponse(400, { error: "Invalid ID" }, false);
     }
-    const { name } = req.body;
     const updatedUser = await userRepository.update(id, {
-      name,
+      ...req.body,
     });
     if (!updatedUser) {
       return this.createResponse(500, { error: "User was not updated" }, false);

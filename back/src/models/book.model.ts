@@ -16,6 +16,9 @@ export class Book {
   @prop({ required: true, type: Number })
   stock!: number;
 
+  @prop({ required: true, type: String })
+  externalBorrow!: string;
+
   @prop({ default: Date.now, type: Date })
   createdAt?: Date;
 

@@ -77,7 +77,8 @@ export const Member = () => {
           prevMembers?.filter((member) => member._id !== _id)
         );
       } else {
-        setShowAlert("No se pudo eliminar");
+        const error =  response.error ?? 'unexpected error'
+        setShowAlert(error);
       }
     } catch (error) {
       setShowAlert("Hubo un error. Intentarlo más tarde");
@@ -135,7 +136,7 @@ export const Member = () => {
                     disabled={
                       member.status.toLowerCase() === "bloqueado" ? true : false
                     }
-                    variant="outlined"
+                    variant="contained"
                     color="primary"
                     onClick={() => handleEdit(member)}
                     sx={{ marginRight: 2 }}
@@ -146,9 +147,10 @@ export const Member = () => {
                     disabled={
                       member.status.toLowerCase() === "bloqueado" ? true : false
                     }
-                    variant="outlined"
+                    variant="contained"
                     color="secondary"
                     onClick={() => handleDelete(member._id)}
+                    sx={{ marginRight: 2 }}
                   >
                     Eliminar
                   </Button>
@@ -156,7 +158,7 @@ export const Member = () => {
                     disabled={
                       member.status.toLowerCase() === "activado" ? true : false
                     }
-                    variant="outlined"
+                    variant="contained"
                     color="secondary"
                     onClick={() => handleActivate(member._id)}
                   >

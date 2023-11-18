@@ -1,11 +1,10 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import axios, { AxiosError } from "axios";
 import { apiUrl } from "../common";
 import { localStorage } from "./local.storage";
 
 const api = axios.create({
   baseURL: apiUrl,
-  timeout: 1000 * 15, // 15 sec
+  timeout: 1000 * 15,
   // headers: {
   //   Accept: 'application/json',
   //   'Content-Type': 'application/json',
@@ -14,9 +13,9 @@ const api = axios.create({
 
 api.interceptors.request.use(
   (config) => {
-    const token = localStorage.get();
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+    const data = localStorage.get();
+    if (data?.token) {
+      config.headers.Authorization = `Bearer ${data.token}`;
     }
     return config;
   },

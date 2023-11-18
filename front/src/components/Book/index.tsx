@@ -123,6 +123,7 @@ export const Book = () => {
               <TableCell>Categoría</TableCell>
               <TableCell>ISBN</TableCell>
               <TableCell>Cantidad</TableCell>
+              <TableCell>Préstamo externo</TableCell>
               <TableCell>Acciones</TableCell>
             </TableRow>
           </TableHead>
@@ -134,10 +135,11 @@ export const Book = () => {
                 <TableCell>{book.category}</TableCell>
                 <TableCell>{book.isbn}</TableCell>
                 <TableCell>{book.stock}</TableCell>
+                <TableCell>{book.externalBorrow.toUpperCase()}</TableCell>
                 <TableCell>
                   <Button
                     disabled={book.stock ? false : true}
-                    variant="outlined"
+                    variant="contained"
                     color="primary"
                     onClick={() => openBorrowModal(book)}
                     sx={{ marginRight: 2 }}
@@ -145,7 +147,7 @@ export const Book = () => {
                     Prestar
                   </Button>
                   <Button
-                    variant="outlined"
+                    variant="contained"
                     color="primary"
                     onClick={() => handleEdit(book)}
                     sx={{ marginRight: 2 }}
@@ -153,7 +155,7 @@ export const Book = () => {
                     Editar
                   </Button>
                   <Button
-                    variant="outlined"
+                    variant="contained"
                     color="secondary"
                     onClick={() => handleDelete(book._id)}
                   >
@@ -176,6 +178,7 @@ export const Book = () => {
           { label: "Categoría", value: "category" },
           { label: "ISBN", value: "isbn" },
           { label: "Cantidad", value: "stock" },
+          { label: "Préstamo externo", value: "externalBorrow" },
         ]}
       />
       <EditItemDialog

@@ -10,7 +10,7 @@ import { BorrowModel } from "../models";
 
 class BorrowService {
   async getAll() {
-    const borrows = await borrowRepository.getAll();
+    const borrows = await borrowRepository.getAll(null, ["member book"]);
     if (!borrows.length) {
       return this.createResponse(404, { error: "Borrows not found" }, false);
     }
@@ -42,6 +42,7 @@ class BorrowService {
       );
     }
     await bookRepository.update(book._id.toString(), { stock: newStock });
+    await memberRepository.update([member._id.toString()], { borrowedAt: Date.now() });
     return this.createResponse(
       201,
       { data: await createdBorrow.populate("member book") },

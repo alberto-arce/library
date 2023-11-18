@@ -1,8 +1,8 @@
 import { MemberModel } from "../models";
 
 class MemberRepository {
-  async getAll() {
-    return MemberModel.find().exec();
+  async getAll(criteria?: any) {
+    return MemberModel.find({ ...criteria }).exec();
   }
 
   async getOne(id: string) {
@@ -13,10 +13,14 @@ class MemberRepository {
     return MemberModel.create(newMember);
   }
 
-  async update(id: string, updateMember: any) {
-    return MemberModel.findByIdAndUpdate(id, updateMember, {
-      new: true,
-    }).exec();
+  async update(ids: string | string[], updateMember: any) {
+    return MemberModel.updateMany(
+      { _id: { $in: ids } },
+      { ...updateMember },
+      {
+        new: true,
+      }
+    ).exec();
   }
 
   async delete(id: string) {

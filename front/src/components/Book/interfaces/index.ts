@@ -5,6 +5,7 @@ export interface IBook {
   category: string;
   isbn: string;
   stock: number;
+  externalBorrow: string;
   createdAt: Date;
   updatedAt: Date;
 }

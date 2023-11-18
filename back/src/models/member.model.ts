@@ -7,10 +7,13 @@ export class Member {
   @prop({ default: 'activado', type: String})
   status!: string;
 
-  @prop({ default: Date.now, type: String})
+  @prop({ default: Date.now, type: Date})
   createdAt?: Date;
+  
+  @prop({ default: null, type: () => Date })
+  borrowedAt?: Date | null;
 
   @prop({ default: null, type: () => Date })
-  deletedAt?: Date | null;
+  deletedAt?: string | null;
 }
 export const MemberModel = getModelForClass(Member);

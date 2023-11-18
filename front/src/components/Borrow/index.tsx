@@ -49,6 +49,7 @@ export const Borrow = () => {
               <TableCell>Libro</TableCell>
               <TableCell>Socio</TableCell>
               <TableCell>Cantidad</TableCell>
+              <TableCell>Préstamo externo</TableCell>
               <TableCell>Fecha de préstamo</TableCell>
               <TableCell>Fecha de entrega</TableCell>
               <TableCell>Acciones</TableCell>
@@ -60,6 +61,7 @@ export const Borrow = () => {
                 <TableCell>{borrow?.book?.title}</TableCell>
                 <TableCell>{borrow?.member?.name}</TableCell>
                 <TableCell>{borrow.stock}</TableCell>
+                <TableCell>{borrow.book.externalBorrow.toUpperCase()}</TableCell>
                 <TableCell>
                   {new Date(borrow.createdAt).toLocaleDateString()}
                 </TableCell>
@@ -71,7 +73,7 @@ export const Borrow = () => {
                 <TableCell>
                   <Button
                     disabled={borrow.deletedAt ? true : false}
-                    variant="outlined"
+                    variant="contained"
                     color="secondary"
                     onClick={() => handleDelete(borrow)}
                   >

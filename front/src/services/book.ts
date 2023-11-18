@@ -14,6 +14,7 @@ interface ICreateBook {
   category: string;
   isbn: string;
   stock: number;
+  externalBorrow: string;
 }
 
 interface IUpdateBook {

@@ -9,6 +9,8 @@ import {
   Input,
   FormHelperText,
   Button,
+  Select,
+  MenuItem,
 } from "@mui/material";
 
 import { IAddItemProps } from "./interfaces";
@@ -43,10 +45,19 @@ export const AddItemDialog = ({
         {fields.map((field) => (
           <FormControl fullWidth key={field.label}>
             <InputLabel>{field.label}</InputLabel>
+            {field.value === "externalBorrow" ? (
+              <Select
+                value={item[field.value] || ""}
+                onChange={(e) => handleFieldChange(field.value, e.target.value as string)}
+              >
+                <MenuItem value="si">Si</MenuItem>
+                <MenuItem value="no">No</MenuItem>
+              </Select>
+            ) : (
             <Input
               value={item[field.value] || ""}
               onChange={(e) => handleFieldChange(field.value, e.target.value)}
-            />
+            />)}
             <FormHelperText>Ingresar {field.label}</FormHelperText>
           </FormControl>
         ))}

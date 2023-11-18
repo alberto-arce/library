@@ -5,9 +5,10 @@ interface IUser {
   password: string;
 }
 
-interface IResponse {
+export interface IResponse {
   user?: {
     name: string;
+    role: string;
   };
   token?: string;
   error?: string;

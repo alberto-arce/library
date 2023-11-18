@@ -9,31 +9,22 @@ class AuthService {
   async login(req: Request) {
     const { name, password } = req.body;
     const user: User | null = await authRepository.getUser(name);
-    if (!user) {
+    if (!user || !(await bcrypt.compare(password, user.password))) {
       return {
         statusCode: 401,
         data: {
-          error: "User not found",
+          // user: { name: "", role: "" },
+          // token: '',
+          error: "Usuario y/o contraseña inválidas",
           success: false,
         },
       };
     }
-    const passwordMatch = await bcrypt.compare(password, user.password);
-    if (!passwordMatch) {
-      return {
-        statusCode: 401,
-        data: {
-          error: "Invalid password",
-          success: false,
-        },
-      };
-    }
-    const token = jwt.sign({ name: user.name }, "SECRET_KEY")
     return {
       statusCode: 200,
       data: {
-        user: { name: user.name },
-        token,
+        user: { name: user.name, role: user.role },
+        token: jwt.sign({ name: user.name, role: user.role }, "SECRET_KEY"),
         success: true,
       },
     };

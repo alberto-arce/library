@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { ChangeEvent, FormEvent, useState } from "react";
 import { TextField, Button, Typography, Container, Paper } from "@mui/material";
 import { authService } from "../../services";
@@ -5,13 +6,15 @@ import { useNavigate } from "react-router-dom";
 import { Alert } from "../Alert";
 
 import { localStorage } from "../../services";
+//import { IResponse } from "../../services/auth";
 
 interface LoginProps {
-  onLogin: (loggedIn: boolean) => void;
+  onLogin: (loggedIn: boolean, user: { name: string; role: string } | undefined) => void;
 }
 
 export const Login: React.FC<LoginProps> = ({ onLogin }) => {
-  const [showAlert, setShowAlert] = useState<string | boolean>(false);  const [name, setName] = useState("");
+  const [showAlert, setShowAlert] = useState<string | boolean>(false);
+  const [name, setName] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
@@ -25,19 +28,17 @@ export const Login: React.FC<LoginProps> = ({ onLogin }) => {
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const user = {
-      name,
-      password,
-    };
-
     try {
-      const response = await authService.login(user);
-      if (response.token) {
-        localStorage.set(response.token);
-        onLogin(true);
+      const response = await authService.login({
+        name,
+        password,
+      });
+      if (response.success) {
+        localStorage.set(response);
+        onLogin(true, response.user);
         navigate("/");
       } else {
-        setShowAlert('Usuario y/o contraseña incorrectas');
+        setShowAlert("Usuario y/o contraseña incorrectas");
       }
     } catch (error) {
       setShowAlert(true);

@@ -19,6 +19,7 @@ interface IBook {
   author: string;
   isbn: string;
   stock: number;
+  externalBorrow: string;
   createdAt: Date;
   updatedAt: Date;
 }

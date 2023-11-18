@@ -1,4 +1,5 @@
 import { Request, NextFunction, Response } from "express";
+import jwt, { JwtPayload } from "jsonwebtoken";
 
 declare global {
   namespace Express {
@@ -10,16 +11,34 @@ declare global {
   }
 }
 
-export const authorization = (
-  req: Request,
-  _: Response,
-  next: NextFunction
-) => {
-  req.isAdmin = function isAdmin() {
-    return req.user.role === "admin";
+export const authorization =
+  (roles: string[]) => (req: Request, res: Response, next: NextFunction) => {
+    const token = getToken(req);
+    if (!token) {
+      res.status(403).json({ message: "Unauthorized" });
+      return;
+    }
+    try {
+      const user = jwt.verify(token, "SECRET_KEY") as JwtPayload;
+      if (!roles.includes(user.role)) {
+        res.status(403).json({ message: "Unauthorized" });
+      } else {
+        next();
+      }
+    } catch (error) {
+      res.status(403).json({ message: "Unauthorized" });
+    }
   };
-  req.isEmployee = function isEmployee() {
-    return req.user.role === "employee";
-  };
-  return next();
+
+const getToken = (req: Request) => {
+  const tokenRegex = /^\s*Bearer\s+(\S+)/g;
+  const authorizationHeader = req.headers.authorization;
+  if (!authorizationHeader) {
+    return null;
+  }
+  const matches = tokenRegex.exec(authorizationHeader);
+  if (!matches) {
+    return null;
+  }
+  return matches[1];
 };
