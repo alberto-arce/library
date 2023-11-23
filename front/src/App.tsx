@@ -8,7 +8,6 @@ import { UserModule } from "./modules/user";
 import { BorrowModule } from "./modules/borrow";
 import { MemberModule } from "./modules/member";
 import { localStorage } from "./services";
-//import { IResponse } from "./services/auth";
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -55,17 +54,17 @@ function App() {
           <>
             {user?.role === "admin" && (
               <>
-                <Route path="/usuarios" element={<UserModule />} />
-                <Route path="/socios" element={<MemberModule />} />
-                <Route path="/libros" element={<BookModule />} />
-                <Route path="/prestamos" element={<BorrowModule />} />
+                <Route path="/usuarios" element={<UserModule userRole={user?.role} />} />
+                <Route path="/socios" element={<MemberModule userRole={user?.role}/>} />
+                <Route path="/libros" element={<BookModule userRole={user?.role}/>} />
+                <Route path="/prestamos" element={<BorrowModule userRole={user?.role}/>} />
               </>
             )}
 
             {user?.role === "employee" && (
               <>
-                <Route path="/libros" element={<BookModule />} />
-                <Route path="/prestamos" element={<BorrowModule />} />
+                <Route path="/libros" element={<BookModule userRole={user?.role}/>} />
+                <Route path="/prestamos" element={<BorrowModule userRole={user?.role}/>} />
               </>
             )}
           </>

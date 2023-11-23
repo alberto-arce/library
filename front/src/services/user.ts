@@ -1,11 +1,5 @@
 import { api } from "./api";
-import { IUser } from "../components/User/interfaces";
-
-interface IResponse {
-  data?: IUser[];
-  error?: string;
-  success: boolean;
-}
+import { IUserResponse } from "./interface";
 
 interface ICreateUser {
   name: string;
@@ -17,15 +11,16 @@ interface IUpdateUser {
 }
 
 interface IService {
-  getAll: () => Promise<IResponse>;
-  create: (newUser: ICreateUser) => Promise<IResponse>;
-  update: (_id: string, updateUser: IUpdateUser) => Promise<IResponse>;
-  delete: (_id: string) => Promise<IResponse>;
+  getAll: () => Promise<IUserResponse>;
+  create: (newUser: ICreateUser) => Promise<IUserResponse>;
+  update: (_id: string, updateUser: IUpdateUser) => Promise<IUserResponse>;
+  delete: (_id: string) => Promise<IUserResponse>;
 }
 
 export const userService: IService = {
   getAll: () => api.get("/users"),
-  create: (newUser: ICreateUser) => api.post('/users/', newUser),
-  update: (_id: string, updateUser: IUpdateUser) => api.put(`/users/${_id}`, updateUser),
+  create: (newUser: ICreateUser) => api.post("/users/", newUser),
+  update: (_id: string, updateUser: IUpdateUser) =>
+    api.put(`/users/${_id}`, updateUser),
   delete: (_id: string) => api.delete(`/users/${_id}`),
 };

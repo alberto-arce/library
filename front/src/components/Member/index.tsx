@@ -15,19 +15,34 @@ import { EditItemDialog } from "../EditItemDialog";
 import { IMember } from "./interfaces";
 import { memberService } from "../../services";
 import { Alert } from "../Alert";
+import { NotFoundImage } from "../NotFoundImage";
 
 export const Member = () => {
-  const [members, setMembers] = useState<IMember[] | undefined>([]);
+  const [members, setMembers] = useState<IMember[] | undefined>(undefined);
   const [isAddingMember, setisAddingMember] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editMember, setEditMember] = useState<IMember | null>(null);
   const [showAlert, setShowAlert] = useState<string | boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+
+  const fetchData = async () => {
+    try {
+      const response = await memberService.getAll();
+      if (response.success) {
+        setMembers(response.data);
+      } else if (response.status === 404) {
+        setMembers([]);
+      } else {
+        setShowAlert(response.error || "Error inesperado");
+      }
+    } catch (error) {
+      setShowAlert("Error inesperado");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchData = async () => {
-      const response = await memberService.getAll();
-      setMembers(response.data);
-    };
     fetchData();
   }, []);
 
@@ -35,8 +50,7 @@ export const Member = () => {
     try {
       const response = await memberService.create(newMember);
       if (response.success) {
-        const response = await memberService.getAll();
-        setMembers(response.data);
+        fetchData();
       } else {
         setShowAlert("No se pudo agregar");
       }
@@ -58,8 +72,7 @@ export const Member = () => {
         editedMember
       );
       if (response.success) {
-        const updatedMembers = await memberService.getAll();
-        setMembers(updatedMembers.data);
+        fetchData();
       } else {
         setShowAlert("No se pudo actualizar");
       }
@@ -73,11 +86,9 @@ export const Member = () => {
     try {
       const response = await memberService.delete(_id);
       if (response.success) {
-        setMembers((prevMembers) =>
-          prevMembers?.filter((member) => member._id !== _id)
-        );
+        fetchData();
       } else {
-        const error =  response.error ?? 'unexpected error'
+        const error = response.error ?? "unexpected error";
         setShowAlert(error);
       }
     } catch (error) {
@@ -89,8 +100,7 @@ export const Member = () => {
     try {
       const response = await memberService.changeStatus(_id);
       if (response.success) {
-        const updatedMembers = await memberService.getAll();
-        setMembers(updatedMembers.data);
+        fetchData();
       } else {
         setShowAlert("No se pudo activar");
       }
@@ -117,65 +127,76 @@ export const Member = () => {
       >
         Agregar socio
       </Button>
-      <Paper>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>Nombre</TableCell>
-              <TableCell>Estado</TableCell>
-              <TableCell>Acciones</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {members?.map((member, index) => (
-              <TableRow key={index}>
-                <TableCell>{member.name}</TableCell>
-                <TableCell>{member.status.toUpperCase()}</TableCell>
-                <TableCell>
-                  <Button
-                    disabled={
-                      member.status.toLowerCase() === "bloqueado" ? true : false
-                    }
-                    variant="contained"
-                    color="primary"
-                    onClick={() => handleEdit(member)}
-                    sx={{ marginRight: 2 }}
-                  >
-                    Editar
-                  </Button>
-                  <Button
-                    disabled={
-                      member.status.toLowerCase() === "bloqueado" ? true : false
-                    }
-                    variant="contained"
-                    color="secondary"
-                    onClick={() => handleDelete(member._id)}
-                    sx={{ marginRight: 2 }}
-                  >
-                    Eliminar
-                  </Button>
-                  <Button
-                    disabled={
-                      member.status.toLowerCase() === "activado" ? true : false
-                    }
-                    variant="contained"
-                    color="secondary"
-                    onClick={() => handleActivate(member._id)}
-                  >
-                    Activar
-                  </Button>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </Paper>
+      {!isLoading && !members?.length && <NotFoundImage />}
+      {!isLoading && members && members.length > 0 && (
+        <div>
+          <Paper>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell>Nombre</TableCell>
+                  <TableCell>Estado</TableCell>
+                  <TableCell>Acciones</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {members?.map((member, index) => (
+                  <TableRow key={index}>
+                    <TableCell>{member.name}</TableCell>
+                    <TableCell>{member.status.toUpperCase()}</TableCell>
+                    <TableCell>
+                      <Button
+                        disabled={
+                          member.status.toLowerCase() === "bloqueado"
+                            ? true
+                            : false
+                        }
+                        variant="contained"
+                        color="primary"
+                        onClick={() => handleEdit(member)}
+                        sx={{ marginRight: 2 }}
+                      >
+                        Editar
+                      </Button>
+                      <Button
+                        disabled={
+                          member.status.toLowerCase() === "bloqueado"
+                            ? true
+                            : false
+                        }
+                        variant="contained"
+                        color="secondary"
+                        onClick={() => handleDelete(member._id)}
+                        sx={{ marginRight: 2 }}
+                      >
+                        Eliminar
+                      </Button>
+                      <Button
+                        disabled={
+                          member.status.toLowerCase() === "activado"
+                            ? true
+                            : false
+                        }
+                        variant="contained"
+                        color="secondary"
+                        onClick={() => handleActivate(member._id)}
+                      >
+                        Activar
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </Paper>
+        </div>
+      )}
       <AddItemDialog
         open={isAddingMember}
         onClose={handleCloseAddMemberDialog}
         onSave={handleSaveNewMember}
-        title="Add a new member"
-        fields={[{ label: "Name", value: "name" }]}
+        title="Agregar socio"
+        fields={[{ label: "Nombre", value: "name" }]}
       />
       <EditItemDialog
         open={isEditing}

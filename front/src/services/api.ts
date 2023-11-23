@@ -5,10 +5,10 @@ import { localStorage } from "./local.storage";
 const api = axios.create({
   baseURL: apiUrl,
   timeout: 1000 * 15,
-  // headers: {
-  //   Accept: 'application/json',
-  //   'Content-Type': 'application/json',
-  // },
+  headers: {
+    Accept: 'application/json',
+    'Content-Type': 'application/json',
+  },
 });
 
 api.interceptors.request.use(
@@ -23,8 +23,22 @@ api.interceptors.request.use(
 );
 
 api.interceptors.response.use(
-  (response) => response.data,
-  (error: AxiosError) => Promise.reject(console.log(error))
+  (response) => {
+    return {
+      ...(response.data || {}),
+      status: response.status,
+    };
+  },
+  (error: AxiosError) => {
+    if (error.response) {
+      return {
+        ...(error.response.data || {}),
+        status: error.response.status,
+      };
+    }
+    return {
+      error: "Error",
+    };
+  }
 );
-
 export { api };

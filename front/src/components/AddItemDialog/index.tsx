@@ -5,9 +5,7 @@ import {
   DialogContent,
   DialogActions,
   FormControl,
-  InputLabel,
   Input,
-  FormHelperText,
   Button,
   Select,
   MenuItem,
@@ -39,26 +37,32 @@ export const AddItemDialog = ({
   };
 
   return (
-    <Dialog open={open} onClose={handleClose}>
+    <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
       <DialogTitle>{title}</DialogTitle>
       <DialogContent>
         {fields.map((field) => (
-          <FormControl fullWidth key={field.label}>
-            <InputLabel>{field.label}</InputLabel>
+          <FormControl
+            fullWidth
+            key={field.label}
+            style={{ marginBottom: "30px" }}
+          >
             {field.value === "externalBorrow" ? (
               <Select
                 value={item[field.value] || ""}
-                onChange={(e) => handleFieldChange(field.value, e.target.value as string)}
+                onChange={(e) =>
+                  handleFieldChange(field.value, e.target.value as string)
+                }
               >
                 <MenuItem value="si">Si</MenuItem>
                 <MenuItem value="no">No</MenuItem>
               </Select>
             ) : (
-            <Input
-              value={item[field.value] || ""}
-              onChange={(e) => handleFieldChange(field.value, e.target.value)}
-            />)}
-            <FormHelperText>Ingresar {field.label}</FormHelperText>
+              <Input
+                value={item[field.value] || ""}
+                onChange={(e) => handleFieldChange(field.value, e.target.value)}
+                placeholder={`${field.label}`}
+              />
+            )}
           </FormControl>
         ))}
       </DialogContent>

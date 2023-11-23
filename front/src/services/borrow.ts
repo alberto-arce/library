@@ -1,12 +1,5 @@
 import { api } from "./api";
-
-import { IBorrow } from "./../components/Borrow/interfaces";
-
-interface IResponse {
-  data?: IBorrow[];
-  error?: string;
-  success: boolean;
-}
+import { IBorrowResponse } from "./interface";
 
 interface ICreateBorrow {
   memberId: string;
@@ -16,9 +9,9 @@ interface ICreateBorrow {
 }
 
 interface IService {
-  getAll: () => Promise<IResponse>;
-  create: (newBorrow: ICreateBorrow) => Promise<IResponse>;
-  delete: (_id: string, stock: number) => Promise<IResponse>;
+  getAll: () => Promise<IBorrowResponse>;
+  create: (newBorrow: ICreateBorrow) => Promise<IBorrowResponse>;
+  delete: (_id: string, stock: number) => Promise<IBorrowResponse>;
 }
 
 export const borrowService: IService = {

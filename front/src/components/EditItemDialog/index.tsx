@@ -6,7 +6,6 @@ import {
   DialogContent,
   DialogActions,
   FormControl,
-  InputLabel,
   Input,
   FormHelperText,
   Button,
@@ -38,17 +37,20 @@ export const EditItemDialog = ({
   };
 
   return (
-    <Dialog open={open} onClose={onClose}>
+    <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
       <DialogTitle>{title}</DialogTitle>
       <DialogContent>
         {fields.map((field: any) => (
-          <FormControl fullWidth key={field.label}>
-            <InputLabel>{field.label}</InputLabel>
+          <FormControl
+          fullWidth
+          key={field.label}
+          style={{ marginBottom: "30px" }}
+          >
             <Input
               value={editedData[field.value] || ""}
               onChange={(e) => handleFieldChange(field.value, e.target.value)}
             />
-            <FormHelperText>Ingresar {field.label}</FormHelperText>
+            <FormHelperText>{field.label}</FormHelperText>
           </FormControl>
         ))}
       </DialogContent>

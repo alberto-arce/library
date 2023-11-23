@@ -16,21 +16,36 @@ import { IBook } from "./interfaces";
 import { bookService } from "../../services";
 import { EditItemDialog } from "../EditItemDialog";
 import { Alert } from "../Alert";
+import { NotFoundImage } from "../NotFoundImage";
 
 export const Book = () => {
   const [selectedBook, setSelectedBook] = useState<IBook | null>(null);
-  const [books, setBooks] = useState<IBook[] | undefined>([]);
+  const [books, setBooks] = useState<IBook[] | undefined>(undefined);
   const [isBorrowModalOpen, setIsBorrowModalOpen] = useState<boolean>(false);
   const [isAddingBook, setIsAddingBook] = useState<boolean>(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editBook, setEditBook] = useState<IBook | null>(null);
   const [showAlert, setShowAlert] = useState<string | boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+
+  const fetchData = async () => {
+    try {
+      const response = await bookService.getAll();
+      if (response.success) {
+        setBooks(response.data);
+      } else if (response.status === 404) {
+        setBooks([]);
+      } else {
+        setShowAlert(response.error || "Error inesperado");
+      }
+    } catch (error) {
+      setShowAlert("Error inesperado");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchData = async () => {
-      const response = await bookService.getAll();
-      setBooks(response?.data);
-    };
     fetchData();
   }, []);
 
@@ -38,8 +53,7 @@ export const Book = () => {
     try {
       const response = await bookService.create(newBook);
       if (response.success) {
-        const response = await bookService.getAll();
-        setBooks(response?.data);
+        fetchData();
       } else {
         setShowAlert("No se pudo agregar");
       }
@@ -58,8 +72,7 @@ export const Book = () => {
     try {
       const response = await bookService.update(editedBook._id, editedBook);
       if (response.success) {
-        const updatedBooks = await bookService.getAll();
-        setBooks(updatedBooks.data);
+        fetchData();
       } else {
         setShowAlert("No se pudo actualizar");
       }
@@ -73,7 +86,7 @@ export const Book = () => {
     try {
       const response = await bookService.delete(_id);
       if (response.success) {
-        setBooks((prevBooks) => prevBooks?.filter((book) => book._id !== _id));
+        fetchData();
       } else {
         setShowAlert("No se pudo eliminar");
       }
@@ -100,8 +113,7 @@ export const Book = () => {
   };
 
   const handleBookBorrowed = async () => {
-    const response = await bookService.getAll();
-    setBooks(response?.data);
+    fetchData();
   };
 
   return (
@@ -114,64 +126,69 @@ export const Book = () => {
       >
         Agregar libro
       </Button>
-      <Paper>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>Título</TableCell>
-              <TableCell>Autor</TableCell>
-              <TableCell>Categoría</TableCell>
-              <TableCell>ISBN</TableCell>
-              <TableCell>Cantidad</TableCell>
-              <TableCell>Préstamo externo</TableCell>
-              <TableCell>Acciones</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {books?.map((book, index) => (
-              <TableRow key={index}>
-                <TableCell>{book.title}</TableCell>
-                <TableCell>{book.author}</TableCell>
-                <TableCell>{book.category}</TableCell>
-                <TableCell>{book.isbn}</TableCell>
-                <TableCell>{book.stock}</TableCell>
-                <TableCell>{book.externalBorrow.toUpperCase()}</TableCell>
-                <TableCell>
-                  <Button
-                    disabled={book.stock ? false : true}
-                    variant="contained"
-                    color="primary"
-                    onClick={() => openBorrowModal(book)}
-                    sx={{ marginRight: 2 }}
-                  >
-                    Prestar
-                  </Button>
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={() => handleEdit(book)}
-                    sx={{ marginRight: 2 }}
-                  >
-                    Editar
-                  </Button>
-                  <Button
-                    variant="contained"
-                    color="secondary"
-                    onClick={() => handleDelete(book._id)}
-                  >
-                    Eliminar
-                  </Button>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </Paper>
+      {!isLoading && !books?.length && <NotFoundImage/>}
+      {!isLoading && books && books.length > 0 && (
+        <div>
+          <Paper>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell>Título</TableCell>
+                  <TableCell>Autor</TableCell>
+                  <TableCell>Categoría</TableCell>
+                  <TableCell>ISBN</TableCell>
+                  <TableCell>Cantidad</TableCell>
+                  <TableCell>Préstamo externo</TableCell>
+                  <TableCell>Acciones</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {books?.map((book, index) => (
+                  <TableRow key={index}>
+                    <TableCell>{book.title}</TableCell>
+                    <TableCell>{book.author}</TableCell>
+                    <TableCell>{book.category}</TableCell>
+                    <TableCell>{book.isbn}</TableCell>
+                    <TableCell>{book.stock}</TableCell>
+                    <TableCell>{book.externalBorrow.toUpperCase()}</TableCell>
+                    <TableCell>
+                      <Button
+                        disabled={book.stock ? false : true}
+                        variant="contained"
+                        color="primary"
+                        onClick={() => openBorrowModal(book)}
+                        sx={{ marginRight: 2 }}
+                      >
+                        Prestar
+                      </Button>
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        onClick={() => handleEdit(book)}
+                        sx={{ marginRight: 2 }}
+                      >
+                        Editar
+                      </Button>
+                      <Button
+                        variant="contained"
+                        color="secondary"
+                        onClick={() => handleDelete(book._id)}
+                      >
+                        Eliminar
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </Paper>
+        </div>
+      )}
       <AddItemDialog
         open={isAddingBook}
         onClose={handleCloseAddBookDialog}
         onSave={handleSaveNewBook}
-        title="Agregar un libro"
+        title="Agregar libro"
         fields={[
           { label: "Título", value: "title" },
           { label: "Autor", value: "author" },

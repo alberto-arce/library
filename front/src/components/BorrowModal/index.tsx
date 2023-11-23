@@ -16,8 +16,8 @@ import {
 import { memberService } from "../../services";
 import { borrowService } from "../../services";
 import { BorrowModalProps, IMember } from "./interfaces";
-import "./index.css";
 import { Alert } from "../Alert";
+import "./index.css";
 
 export const BorrowModal: React.FC<BorrowModalProps> = ({
   isOpen,

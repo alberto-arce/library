@@ -15,19 +15,34 @@ import { IUser } from "./interfaces";
 import { userService } from "../../services";
 import { EditItemDialog } from "../EditItemDialog";
 import { Alert } from "../Alert";
+import { NotFoundImage } from "../NotFoundImage";
 
 export const User = () => {
-  const [users, setUsers] = useState<IUser[] | undefined>([]);
+  const [users, setUsers] = useState<IUser[] | undefined>(undefined);
   const [isAddingUser, setIsAddingUser] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editUser, setEditUser] = useState<IUser | null>(null);
   const [showAlert, setShowAlert] = useState<string | boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+
+  const fetchData = async () => {
+    try {
+      const response = await userService.getAll();
+      if (response.success) {
+        setUsers(response.data);
+      } else if (response.status === 404) {
+        setUsers([]);
+      } else {
+        setShowAlert(response.error || "Error inesperado");
+      }
+    } catch (error) {
+      setShowAlert("Error inesperado");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchData = async () => {
-      const response = await userService.getAll();
-      setUsers(response?.data);
-    };
     fetchData();
   }, []);
 
@@ -35,8 +50,7 @@ export const User = () => {
     try {
       const response = await userService.create(newUser);
       if (response.success) {
-        const response = await userService.getAll();
-        setUsers(response?.data);
+        fetchData();
       } else {
         setShowAlert("No se pudo agregar");
       }
@@ -55,8 +69,7 @@ export const User = () => {
     try {
       const response = await userService.update(editedUser._id, editedUser);
       if (response.success) {
-        const updatedUsers = await userService.getAll();
-        setUsers(updatedUsers.data);
+        fetchData();
       } else {
         setShowAlert("No se pudo actualizar");
       }
@@ -70,7 +83,7 @@ export const User = () => {
     try {
       const response = await userService.delete(_id);
       if (response.success) {
-        setUsers((prevUsers) => prevUsers?.filter((user) => user._id !== _id));
+        fetchData();
       } else {
         setShowAlert("No se pudo eliminar");
       }
@@ -97,45 +110,50 @@ export const User = () => {
       >
         Agregar usuario
       </Button>
-      <Paper>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>Nombre</TableCell>
-              <TableCell>Acciones</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {users?.map((user, index) => (
-              <TableRow key={index}>
-                <TableCell>{user.name}</TableCell>
-                <TableCell>
-                  <Button
-                    variant="outlined"
-                    color="primary"
-                    onClick={() => handleEdit(user)}
-                    sx={{ marginRight: 2 }}
-                  >
-                    Editar
-                  </Button>
-                  <Button
-                    variant="outlined"
-                    color="secondary"
-                    onClick={() => handleDelete(user._id)}
-                  >
-                    Eliminar
-                  </Button>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </Paper>
+      {!isLoading && !users?.length && <NotFoundImage/>}
+      {!isLoading && users && users.length > 0 && (
+        <div>
+          <Paper>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell>Nombre</TableCell>
+                  <TableCell>Acciones</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {users?.map((user, index) => (
+                  <TableRow key={index}>
+                    <TableCell>{user.name}</TableCell>
+                    <TableCell>
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        onClick={() => handleEdit(user)}
+                        sx={{ marginRight: 2 }}
+                      >
+                        Editar
+                      </Button>
+                      <Button
+                        variant="contained"
+                        color="secondary"
+                        onClick={() => handleDelete(user._id)}
+                      >
+                        Eliminar
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </Paper>
+        </div>
+      )}
       <AddItemDialog
         open={isAddingUser}
         onClose={handleCloseAddUserDialog}
         onSave={handleSaveNewUser}
-        title="Agregar un usuario"
+        title="Agregar usuario"
         fields={[
           { label: "Nombre", value: "name" },
           { label: "Contraseña", value: "password" },

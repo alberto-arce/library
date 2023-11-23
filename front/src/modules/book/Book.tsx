@@ -1,10 +1,10 @@
 import { Book } from "../../components/Book";
 import { LayoutModule } from "../layout";
 
-export const BookModule = () => {
+export const BookModule: React.FC<{ userRole: string | undefined }> = ({ userRole }) => {
   return (
     <>
-      <LayoutModule />
+      <LayoutModule userRole={userRole}/>
       <div style={{ marginTop: "20px" }}>
         <Book />
       </div>
