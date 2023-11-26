@@ -59,5 +59,7 @@ Before running the application, make sure to set up the required environment var
 
 ## Credentials
 
-- Username: admin
+- Name: admin
 - Password: admin
+- Name: emp
+- Password: emp
