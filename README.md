@@ -47,8 +47,8 @@ Before running the application, make sure to set up the required environment var
 ## Back Setup
 
 1. Navigate to the back folder.
-2. Run the back migration scripts: `npm run migrate:up`
-3. Install dependencies: `npm install`
+2. Install dependencies: `npm install`
+3. Run the back migration scripts: `npm run migrate:up`
 4. Start the back development server: `npm run dev`
 
 ## Front Setup
