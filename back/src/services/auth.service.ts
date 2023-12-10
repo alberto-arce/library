@@ -13,8 +13,6 @@ class AuthService {
       return {
         statusCode: 401,
         data: {
-          // user: { name: "", role: "" },
-          // token: '',
           error: "Usuario y/o contraseña inválidas",
           success: false,
         },

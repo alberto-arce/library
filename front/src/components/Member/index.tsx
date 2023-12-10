@@ -121,7 +121,7 @@ export const Member = () => {
     <Container>
       <Button
         variant="contained"
-        color="primary"
+        color="success"
         onClick={handleOpenAddMemberDialog}
         style={{ marginBottom: "20px" }}
       >
@@ -152,7 +152,7 @@ export const Member = () => {
                             : false
                         }
                         variant="contained"
-                        color="primary"
+                        color="warning"
                         onClick={() => handleEdit(member)}
                         sx={{ marginRight: 2 }}
                       >
@@ -165,7 +165,7 @@ export const Member = () => {
                             : false
                         }
                         variant="contained"
-                        color="secondary"
+                        color="error"
                         onClick={() => handleDelete(member._id)}
                         sx={{ marginRight: 2 }}
                       >

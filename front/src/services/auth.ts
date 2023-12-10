@@ -6,16 +6,6 @@ interface IUser {
   password: string;
 }
 
-// export interface IResponse {
-//   user?: {
-//     name: string;
-//     role: string;
-//   };
-//   token?: string;
-//   error?: string;
-//   success: boolean;
-// }
-
 interface IService {
   login: (user: IUser) => Promise<ILoginResponse>;
 }

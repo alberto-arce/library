@@ -1,14 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import lscache from "lscache";
-import { IResponse } from "../services/auth";
+import { ILoginResponse } from "../services";
 
 const tokenkey = "tokenkey";
 const loggedInkey = "loggedInkey";
 const duration = 86400000;
 
 interface ILocalStorage {
-  set: (user: IResponse) => void;
-  get: () => IResponse;
+  set: (user: ILoginResponse) => void;
+  get: () => ILoginResponse;
   delete: () => void;
   setLoggedIn: (token: string) => void;
   getLoggedIn: () => any;

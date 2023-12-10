@@ -1,12 +1,13 @@
 import { User } from "../../components/User";
 import { LayoutModule } from "../layout";
 
-export const UserModule: React.FC<{ userRole: string | undefined }> = ({
+export const UserModule: React.FC<{ userName: string, userRole: string | undefined }> = ({
+  userName,
   userRole,
 }) => {
   return (
     <>
-      <LayoutModule userRole={userRole} />
+      <LayoutModule userName={userName} userRole={userRole} />
       <div style={{ marginTop: "20px" }}>
         <User />
       </div>

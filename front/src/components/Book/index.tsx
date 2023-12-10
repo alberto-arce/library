@@ -120,7 +120,7 @@ export const Book = () => {
     <Container>
       <Button
         variant="contained"
-        color="primary"
+        color="success"
         onClick={handleOpenAddBookDialog}
         style={{ marginBottom: "20px" }}
       >
@@ -155,7 +155,7 @@ export const Book = () => {
                       <Button
                         disabled={book.stock ? false : true}
                         variant="contained"
-                        color="primary"
+                        color="secondary"
                         onClick={() => openBorrowModal(book)}
                         sx={{ marginRight: 2 }}
                       >
@@ -163,7 +163,7 @@ export const Book = () => {
                       </Button>
                       <Button
                         variant="contained"
-                        color="primary"
+                        color="warning"
                         onClick={() => handleEdit(book)}
                         sx={{ marginRight: 2 }}
                       >
@@ -171,7 +171,7 @@ export const Book = () => {
                       </Button>
                       <Button
                         variant="contained"
-                        color="secondary"
+                        color="error"
                         onClick={() => handleDelete(book._id)}
                       >
                         Eliminar

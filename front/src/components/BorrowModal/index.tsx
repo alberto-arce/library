@@ -125,7 +125,7 @@ export const BorrowModal: React.FC<BorrowModalProps> = ({
           />
           <Button
             variant="contained"
-            color="primary"
+            color="success"
             onClick={handleConfirmBorrow}
           >
             Confirmar

@@ -42,9 +42,9 @@ export const EditItemDialog = ({
       <DialogContent>
         {fields.map((field: any) => (
           <FormControl
-          fullWidth
-          key={field.label}
-          style={{ marginBottom: "30px" }}
+            fullWidth
+            key={field.label}
+            style={{ marginBottom: "30px" }}
           >
             <Input
               value={editedData[field.value] || ""}
@@ -55,10 +55,10 @@ export const EditItemDialog = ({
         ))}
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose} color="secondary">
+        <Button variant="contained" color="error" onClick={onClose}>
           Cancelar
         </Button>
-        <Button onClick={handleSave} color="primary">
+        <Button variant="contained" color="success" onClick={handleSave}>
           Guardar
         </Button>
       </DialogActions>

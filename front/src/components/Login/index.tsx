@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { ChangeEvent, FormEvent, useState } from "react";
 import { TextField, Button, Typography, Container, Paper } from "@mui/material";
 import { authService } from "../../services";
@@ -78,7 +77,7 @@ export const Login: React.FC<LoginProps> = ({ onLogin }) => {
               <Button
                 type="submit"
                 variant="contained"
-                color="primary"
+                color="success"
                 fullWidth
                 style={{ marginTop: 20 }}
               >

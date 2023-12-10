@@ -16,9 +16,10 @@ import { useNavigate } from "react-router-dom";
 
 const pages = ["usuarios", "socios", "libros", "prestamos"];
 const settings = ["salir"];
-export const LayoutModule: React.FC<{ userRole: string | undefined }> = ({
-  userRole,
-}) => {
+export const LayoutModule: React.FC<{
+  userName: string;
+  userRole: string | undefined;
+}> = ({ userName, userRole }) => {
   const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
   const navigate = useNavigate();
@@ -171,7 +172,7 @@ export const LayoutModule: React.FC<{ userRole: string | undefined }> = ({
             <Box sx={{ flexGrow: 0 }}>
               <Tooltip title="Configuraciones">
                 <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                  <Avatar src="src/assets/avatar.png" />
+                  <Avatar sx={{ bgcolor: '#f50057' }}>{userName.charAt(0).toUpperCase()}</Avatar>
                 </IconButton>
               </Tooltip>
               <Menu
@@ -194,14 +195,17 @@ export const LayoutModule: React.FC<{ userRole: string | undefined }> = ({
                   <MenuItem key={setting} onClick={handleCloseUserMenu}>
                     <Typography textAlign="center">
                       {setting === "salir" ? (
-                        <a
-                          onClick={(e) => {
-                            e.preventDefault();
-                            handleLogout();
-                          }}
-                        >
-                          {setting}
-                        </a>
+                        <>
+                          <span style={{cursor: 'default'}}>Hola {userName}</span> <br/>
+                          <a
+                            onClick={(e) => {
+                              e.preventDefault();
+                              handleLogout();
+                            }}
+                          >
+                            {setting}
+                          </a>
+                        </>
                       ) : (
                         setting
                       )}

@@ -104,7 +104,7 @@ export const User = () => {
     <Container>
       <Button
         variant="contained"
-        color="primary"
+        color="success"
         onClick={handleOpenAddUserDialog}
         style={{ marginBottom: "20px" }}
       >
@@ -128,7 +128,7 @@ export const User = () => {
                     <TableCell>
                       <Button
                         variant="contained"
-                        color="primary"
+                        color="warning"
                         onClick={() => handleEdit(user)}
                         sx={{ marginRight: 2 }}
                       >
@@ -136,7 +136,7 @@ export const User = () => {
                       </Button>
                       <Button
                         variant="contained"
-                        color="secondary"
+                        color="error"
                         onClick={() => handleDelete(user._id)}
                       >
                         Eliminar

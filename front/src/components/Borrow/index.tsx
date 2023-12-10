@@ -91,7 +91,7 @@ export const Borrow = () => {
                       <Button
                         disabled={borrow.deletedAt ? true : false}
                         variant="contained"
-                        color="secondary"
+                        color="success"
                         onClick={() => handleDelete(borrow)}
                       >
                         Recibido
