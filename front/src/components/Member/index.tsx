@@ -22,7 +22,6 @@ export const Member = () => {
   const [isAddingMember, setisAddingMember] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editMember, setEditMember] = useState<IMember | null>(null);
-  const [showAlert, setShowAlert] = useState<string | boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   const fetchData = async () => {
@@ -33,10 +32,20 @@ export const Member = () => {
       } else if (response.status === 404) {
         setMembers([]);
       } else {
-        setShowAlert(response.error || "Error inesperado");
+        Alert({
+          type: "error",
+          title: "Error al obtener los socios",
+          text: "Por favor, intenta de nuevo más tarde",
+          timer: 2000,
+        });
       }
     } catch (error) {
-      setShowAlert("Error inesperado");
+      Alert({
+        type: "error",
+        title: "Oops...",
+        text: "Hubo un problema. Por favor, intenta de nuevo más tarde",
+        timer: 2000,
+      });
     } finally {
       setIsLoading(false);
     }
@@ -50,12 +59,28 @@ export const Member = () => {
     try {
       const response = await memberService.create(newMember);
       if (response.success) {
+        Alert({
+          type: "success",
+          title: "Socio Agregado",
+          text: "El socio ha sido agregado exitosamente.",
+          timer: 2000,
+        });
         fetchData();
       } else {
-        setShowAlert("No se pudo agregar");
+        Alert({
+          type: "error",
+          title: "Error al agregar Socio",
+          text: "No se pudo agregar el socio. Por favor, intenta de nuevo más tarde.",
+          timer: 2000,
+        });
       }
     } catch (error) {
-      setShowAlert("Hubo un error. Intentarlo más tarde");
+      Alert({
+        type: "error",
+        title: "Oops...",
+        text: "Hubo un problema. Por favor, intenta de nuevo más tarde.",
+        timer: 2000,
+      });
     }
     handleCloseAddMemberDialog();
   };
@@ -72,43 +97,117 @@ export const Member = () => {
         editedMember
       );
       if (response.success) {
+        Alert({
+          type: "success",
+          title: "Cambios Guardados",
+          text: "Los cambios en el socio se han guardado correctamente.",
+          timer: 2000,
+        });
         fetchData();
       } else {
-        setShowAlert("No se pudo actualizar");
+        Alert({
+          type: "error",
+          title: "Error al Editar Socio",
+          text: "No se pudieron guardar los cambios. Por favor, intenta de nuevo.",
+          timer: 2000,
+        });
       }
     } catch (error) {
-      setShowAlert("Hubo un error. Intentarlo más tarde");
+      Alert({
+        type: "error",
+        title: "Oops...",
+        text: "Hubo un problema. Por favor, intenta de nuevo más tarde.",
+      });
     }
     setIsEditing(false);
   };
 
   const handleDelete = async (_id: string) => {
     try {
-      const response = await memberService.delete(_id);
-      if (response.success) {
-        fetchData();
-      } else {
-        const error = response.error ?? "unexpected error";
-        setShowAlert(error);
-      }
+      Alert({
+        type: "warning",
+        title: "Confirmar Eliminación",
+        text: "¿Estás seguro de que deseas eliminar a este socio? Esta acción no se puede deshacer.",
+        showCancelButton: true,
+        cancelButtonText: "Cancelar",
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        showConfirmButton: true,
+        confirmButtonText: "Si, eliminar",
+        position: "center",
+        onConfirm: async () => {
+          const response = await memberService.delete(_id);
+          if (response.success) {
+            fetchData();
+            Alert({
+              type: "success",
+              title: "Socio Eliminado",
+              text: "El socio ha sido eliminado exitosamente.",
+              timer: 2000,
+            });
+          } else {
+            Alert({
+              type: "error",
+              title: "Error al Eliminar Socio",
+              text: "No se pudo eliminar el socio. Por favor, intenta de nuevo más tarde.",
+              timer: 2000,
+            });
+          }
+        },
+      });
     } catch (error) {
-      setShowAlert("Hubo un error. Intentarlo más tarde");
+      Alert({
+        type: "error",
+        title: "Oops...",
+        text: "Hubo un problema. Por favor, intenta de nuevo más tarde.",
+        timer: 2000,
+      });
     }
   };
 
   const handleActivate = async (_id: string) => {
-    try {
-      const response = await memberService.changeStatus(_id);
-      if (response.success) {
-        fetchData();
-      } else {
-        setShowAlert("No se pudo activar");
-      }
-    } catch (error) {
-      setShowAlert("Hubo un error. Intentarlo más tarde");
-    }
+    Alert({
+      type: "warning",
+      title: "Confirmar Activación",
+      text: "¿Estás seguro de que deseas activar a este socio?",
+      showCancelButton: true,
+      cancelButtonText: "Cancelar",
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      showConfirmButton: true,
+      confirmButtonText: "Sí, activar",
+      position: "center",
+      onConfirm: async () => {
+        try {
+          const response = await memberService.changeStatus(_id);
+          if (response.success) {
+            Alert({
+              type: "success",
+              title: "Socio Activado",
+              text: "El socio ha sido activado exitosamente.",
+              timer: 2000,
+            });
+            fetchData();
+          } else {
+            Alert({
+              type: "error",
+              title: "Error al Activar Socio",
+              text: "No se pudo activar al socio. Por favor, intenta de nuevo más tarde.",
+              timer: 2000,
+            });
+          }
+        } catch (error) {
+          Alert({
+            type: "error",
+            title: "Oops...",
+            text: "Hubo un problema. Por favor, intenta de nuevo más tarde.",
+            timer: 2000,
+          });
+        }
+      },
+    });
   };
-
+  
   const handleOpenAddMemberDialog = () => {
     setisAddingMember(true);
   };
@@ -206,9 +305,6 @@ export const Member = () => {
         fields={[{ label: "Nombre", value: "name" }]}
         initialData={editMember}
       />
-      {showAlert && typeof showAlert === "string" && (
-        <Alert message={showAlert} onClose={() => setShowAlert(false)} />
-      )}
     </Container>
   );
 };

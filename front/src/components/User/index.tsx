@@ -22,7 +22,6 @@ export const User = () => {
   const [isAddingUser, setIsAddingUser] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editUser, setEditUser] = useState<IUser | null>(null);
-  const [showAlert, setShowAlert] = useState<string | boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   const fetchData = async () => {
@@ -33,10 +32,20 @@ export const User = () => {
       } else if (response.status === 404) {
         setUsers([]);
       } else {
-        setShowAlert(response.error || "Error inesperado");
+        Alert({
+          type: "error",
+          title: "Error al obtner los usuarios",
+          text: "Por favor, intenta de nuevo más tarde",
+          timer: 2000,
+        });
       }
     } catch (error) {
-      setShowAlert("Error inesperado");
+      Alert({
+        type: "error",
+        title: "Oops...",
+        text: "Hubo un problema. Por favor, intenta de nuevo más tarde",
+        timer: 2000,
+      });
     } finally {
       setIsLoading(false);
     }
@@ -50,12 +59,28 @@ export const User = () => {
     try {
       const response = await userService.create(newUser);
       if (response.success) {
+        Alert({
+          type: "success",
+          title: "Usuario Agregado",
+          text: "El nuevo usuario ha sido añadido exitosamente.",
+          timer: 2000,
+        });
         fetchData();
       } else {
-        setShowAlert("No se pudo agregar");
+        Alert({
+          type: "error",
+          title: "Error al Agregar Usuario",
+          text: "No se pudo agregar el usuario. Por favor, inténtalo de nuevo más tarde.",
+          timer: 2000,
+        });
       }
     } catch (error) {
-      setShowAlert("Hubo un error. Intentarlo más tarde");
+      Alert({
+        type: "error",
+        title: "Oops...",
+        text: "Hubo un problema. Por favor, intenta de nuevo más tarde",
+        timer: 2000,
+      });
     }
     handleCloseAddUserDialog();
   };
@@ -69,26 +94,72 @@ export const User = () => {
     try {
       const response = await userService.update(editedUser._id, editedUser);
       if (response.success) {
+        Alert({
+          type: "success",
+          title: "Cambios Guardados",
+          text: "Los cambios en el usuario se han guardado exitosamente.",
+          timer: 2000,
+        });
         fetchData();
       } else {
-        setShowAlert("No se pudo actualizar");
+        Alert({
+          type: "error",
+          title: "Error al Editar Usuario",
+          text: "No se pudieron guardar los cambios. Por favor, inténtalo de nuevo más tarde.",
+          timer: 2000,
+        });
       }
     } catch (error) {
-      setShowAlert("Hubo un error. Intentarlo más tarde");
+      Alert({
+        type: "error",
+        title: "Oops...",
+        text: "Hubo un problema. Por favor, intenta de nuevo más tarde",
+        timer: 2000,
+      });
     }
     setIsEditing(false);
   };
 
   const handleDelete = async (_id: string) => {
     try {
-      const response = await userService.delete(_id);
-      if (response.success) {
-        fetchData();
-      } else {
-        setShowAlert("No se pudo eliminar");
-      }
+      Alert({
+        type: "warning",
+        title: "Confirmar Eliminación",
+        text: "¿Estás seguro de que quieres eliminar a este usuario? Esta acción no se puede deshacer",
+        showCancelButton: true,
+        cancelButtonText: "Cancelar",
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        showConfirmButton: true,
+        confirmButtonText: "Si, eliminar",
+        position: "center",
+        onConfirm: async () => {
+          const response = await userService.delete(_id);
+          if (response.success) {
+            fetchData();
+            Alert({
+              type: "success",
+              title: "Usuario Eliminado",
+              text: "El usuario ha sido eliminado correctamente.",
+              timer: 2000,
+            });
+          } else {
+            Alert({
+              type: "error",
+              title: "Error al Eliminar Usuario",
+              text: "No se pudo eliminar el usuario. Por favor, inténtalo de nuevo más tarde.",
+              timer: 2000,
+            });
+          }
+        },
+      });
     } catch (error) {
-      setShowAlert("Hubo un error. Intentarlo más tarde");
+      Alert({
+        type: "error",
+        title: "Oops...",
+        text: "Hubo un problema. Por favor, intenta de nuevo más tarde",
+        timer: 2000,
+      });
     }
   };
 
@@ -110,7 +181,7 @@ export const User = () => {
       >
         Agregar usuario
       </Button>
-      {!isLoading && !users?.length && <NotFoundImage/>}
+      {!isLoading && !users?.length && <NotFoundImage />}
       {!isLoading && users && users.length > 0 && (
         <div>
           <Paper>
@@ -167,9 +238,6 @@ export const User = () => {
         fields={[{ label: "Nombre", value: "name" }]}
         initialData={editUser}
       />
-      {showAlert && typeof showAlert === "string" && (
-        <Alert message={showAlert} onClose={() => setShowAlert(false)} />
-      )}
     </Container>
   );
 };

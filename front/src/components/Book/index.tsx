@@ -25,7 +25,6 @@ export const Book = () => {
   const [isAddingBook, setIsAddingBook] = useState<boolean>(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editBook, setEditBook] = useState<IBook | null>(null);
-  const [showAlert, setShowAlert] = useState<string | boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   const fetchData = async () => {
@@ -36,10 +35,20 @@ export const Book = () => {
       } else if (response.status === 404) {
         setBooks([]);
       } else {
-        setShowAlert(response.error || "Error inesperado");
+        Alert({
+          type: "error",
+          title: "Error al obtener los Libros",
+          text: "Por favor, intenta de nuevo más tarde",
+          timer: 2000,
+        });
       }
     } catch (error) {
-      setShowAlert("Error inesperado");
+      Alert({
+        type: "error",
+        title: "Oops...",
+        text: "Hubo un problema. Por favor, intenta de nuevo más tarde",
+        timer: 2000,
+      });
     } finally {
       setIsLoading(false);
     }
@@ -53,12 +62,26 @@ export const Book = () => {
     try {
       const response = await bookService.create(newBook);
       if (response.success) {
+        Alert({
+          type: "success",
+          title: "Libro Agregado",
+          text: "El libro ha sido agregado exitosamente.",
+          timer: 2000,
+        });
         fetchData();
       } else {
-        setShowAlert("No se pudo agregar");
+        Alert({
+          type: "error",
+          title: "Agregar Libro Fallido",
+          text: "No se pudo agregar el libro. Por favor, inténtalo de nuevo.",
+        });
       }
     } catch (error) {
-      setShowAlert("Hubo un error. Intentarlo más tarde");
+      Alert({
+        type: "error",
+        title: "Oops...",
+        text: "Hubo un error. Intentarlo más tarde",
+      });
     }
     handleCloseAddBookDialog();
   };
@@ -72,26 +95,70 @@ export const Book = () => {
     try {
       const response = await bookService.update(editedBook._id, editedBook);
       if (response.success) {
+        Alert({
+          type: "success",
+          title: "Cambios Guardados",
+          text: "Los cambios en el libro se han guardado correctamente.",
+          timer: 2000,
+        });
         fetchData();
       } else {
-        setShowAlert("No se pudo actualizar");
+        Alert({
+          type: "error",
+          title: "Error al Editar Libro",
+          text: "No se pudieron guardar los cambios. Inténtalo nuevamente.",
+        });
       }
     } catch (error) {
-      setShowAlert("Hubo un error. Intentarlo más tarde");
+      Alert({
+        type: "error",
+        title: "Oops...",
+        text: "Hubo un problema. Por favor, intenta de nuevo más tarde.",
+      });
     }
     setIsEditing(false);
   };
 
   const handleDelete = async (_id: string) => {
     try {
-      const response = await bookService.delete(_id);
-      if (response.success) {
-        fetchData();
-      } else {
-        setShowAlert("No se pudo eliminar");
-      }
+      Alert({
+        type: "warning",
+        title: "Confirmar Eliminación",
+        text: "¿Estás seguro de que deseas eliminar este libro? Esta acción no se puede deshacer.",
+        showCancelButton: true,
+        cancelButtonText: "Cancelar",
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        showConfirmButton: true,
+        confirmButtonText: "Si, eliminar",
+        position: "center",
+        onConfirm: async () => {
+          const response = await bookService.delete(_id);
+          if (response.success) {
+            fetchData();
+            Alert({
+              type: "success",
+              title: "Libro Eliminado",
+              text: "El libro ha sido eliminado exitosamente.",
+              timer: 2000,
+            });
+          } else {
+            Alert({
+              type: "error",
+              title: "Error al Eliminar Libro",
+              text: "No se pudo eliminar el libro. Inténtalo de nuevo más tarde.",
+              timer: 2000,
+            });
+          }
+        },
+      });
     } catch (error) {
-      setShowAlert("Hubo un error. Intentarlo más tarde");
+      Alert({
+        type: "error",
+        title: "Oops...",
+        text: "Hubo un problema. Por favor, intenta de nuevo más tarde",
+        timer: 2000,
+      });
     }
   };
 
@@ -126,7 +193,7 @@ export const Book = () => {
       >
         Agregar libro
       </Button>
-      {!isLoading && !books?.length && <NotFoundImage/>}
+      {!isLoading && !books?.length && <NotFoundImage />}
       {!isLoading && books && books.length > 0 && (
         <div>
           <Paper>
@@ -217,9 +284,6 @@ export const Book = () => {
         selectedBook={selectedBook}
         onBookBorrowed={handleBookBorrowed}
       />
-      {showAlert && typeof showAlert === "string" && (
-        <Alert message={showAlert} onClose={() => setShowAlert(false)} />
-      )}
     </Container>
   );
 };

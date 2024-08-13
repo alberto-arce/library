@@ -28,8 +28,7 @@ export const BorrowModal: React.FC<BorrowModalProps> = ({
   const [members, setMembers] = useState<IMember[] | undefined>([]);
   const [numberSelectedBooks, setNumberSelectedBooks] = useState<number>(1);
   const [selectedMember, setSelectedMember] = useState<IMember | null>(null);
-  const [showAlert, setShowAlert] = useState<string | boolean>(false);
-
+  
   useEffect(() => {
     const fetchData = async () => {
       const response = await memberService.getAll();
@@ -49,7 +48,12 @@ export const BorrowModal: React.FC<BorrowModalProps> = ({
   const handleConfirmBorrow = async () => {
     try {
       if (selectedBook && numberSelectedBooks > selectedBook?.stock) {
-        setShowAlert("Stock insuficiente");
+        Alert({
+          type: "error",
+          title: "Error al Prestar Libro",
+          text: "Stock insuficiente",
+          timer: 2000
+        });
         return;
       }
       if (!selectedMember) {
@@ -59,17 +63,32 @@ export const BorrowModal: React.FC<BorrowModalProps> = ({
         memberId: selectedMember._id,
         bookId: selectedBook?._id,
         numberSelectedBooks,
-        newStock: (selectedBook?.stock ?? 0) -  numberSelectedBooks ,
+        newStock: (selectedBook?.stock ?? 0) - numberSelectedBooks,
       });
       if (response.success) {
-        setShowAlert("El préstamo fue realizado");
+        Alert({
+          type: "success",
+          title: "Libro Prestado",
+          text: "El libro ha sido prestado exitosamente.",
+          timer: 2000
+        });
         onBookBorrowed();
       } else {
-        setShowAlert("El préstamo no fue realizado");
+        Alert({
+          type: "warning",
+          title: "Error al Prestar Libro",
+          text: "No se pudo completar el préstamo del libro. Por favor, inténtalo de nuevo.",
+          timer: 2000
+        });
       }
       closeBorrowModal();
     } catch (error) {
-      setShowAlert("Hubo un error. Intentarlo más tarde");
+      Alert({
+        type: "error",
+        title: "Oops...",
+        text: "Hubo un problema. Por favor, intenta de nuevo más tarde.",
+        timer: 2000
+      });
     }
   };
 
@@ -132,9 +151,6 @@ export const BorrowModal: React.FC<BorrowModalProps> = ({
           </Button>
         </div>
       </Modal>
-      {showAlert && typeof showAlert === "string" && (
-        <Alert message={showAlert} onClose={() => setShowAlert(false)} />
-      )}
     </>
   );
 };
