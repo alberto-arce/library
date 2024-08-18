@@ -1,23 +1,14 @@
 import { useState, useEffect } from "react";
-import { borrowService } from "../../services";
-import {
-  Container,
-  Paper,
-  Table,
-  TableHead,
-  TableBody,
-  TableCell,
-  TableRow,
-  Button,
-} from "@mui/material";
+import { DataGrid, GridColDef } from "@mui/x-data-grid";
+import { Container, Paper, Button } from "@mui/material";
 
-import { IBorrow } from "./interfaces";
+import { borrowService } from "../../services";
 import { Alert } from "../Alert";
+import { IBorrow } from "./interfaces";
 import { NotFoundImage } from "../NotFoundImage";
 
 export const Borrow = () => {
   const [borrows, setBorrows] = useState<IBorrow[] | undefined>(undefined);
-  const [showAlert, setShowAlert] = useState<string | boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   const fetchData = async () => {
@@ -26,10 +17,20 @@ export const Borrow = () => {
       if (response.success) {
         setBorrows(response.data);
       } else if (response.status !== 404) {
-        setShowAlert(response.error || "Error inesperado");
+        Alert({
+          type: "error",
+          title: "Error al obtener los Libros",
+          text: "Por favor, intenta de nuevo más tarde",
+          timer: 2000,
+        });
       }
     } catch (error) {
-      setShowAlert("Error inesperado");
+      Alert({
+        type: "error",
+        title: "Oops...",
+        text: "Hubo un problema. Por favor, intenta de nuevo más tarde",
+        timer: 2000,
+      });
     } finally {
       setIsLoading(false);
     }
@@ -45,68 +46,112 @@ export const Borrow = () => {
       if (response.success) {
         fetchData();
       } else {
-        setShowAlert("No se pudo recibir");
+        Alert({
+          type: "error",
+          title: "Error al recibir libros",
+          text: "Por favor, intenta de nuevo más tarde",
+          timer: 2000,
+        });
       }
     } catch (error) {
-      setShowAlert("Hubo un error. Intentarlo más tarde");
+      Alert({
+        type: "error",
+        title: "Oops...",
+        text: "Hubo un problema. Por favor, intenta de nuevo más tarde",
+        timer: 2000,
+      });
     }
   };
 
+  const columns: GridColDef[] = [
+    {
+      field: "bookTitle",
+      headerName: "Libro",
+      headerAlign: "center",
+      align: "center",
+      flex: 1,
+    },
+    {
+      field: "memberName",
+      headerName: "Socio",
+      headerAlign: "center",
+      align: "center",
+      flex: 1,
+    },
+    {
+      field: "stock",
+      headerName: "Cantidad",
+      headerAlign: "center",
+      align: "center",
+      flex: 1,
+    },
+    {
+      field: "externalBorrow",
+      headerName: "Préstamo externo",
+      headerAlign: "center",
+      align: "center",
+      flex: 1,
+    },
+    {
+      field: "createdAt",
+      headerName: "Fecha de préstamo",
+      flex: 1,
+      valueFormatter: (params) => new Date(params).toLocaleDateString(),
+    },
+    {
+      field: "deletedAt",
+      headerName: "Fecha de entrega",
+      headerAlign: "center",
+      align: "center",
+      flex: 1,
+      valueFormatter: (params) =>
+        params ? new Date(params).toLocaleDateString() : "No Entregado",
+    },
+    {
+      field: "actions",
+      headerName: "Acciones",
+      headerAlign: "center",
+      align: "center",
+      flex: 1,
+      renderCell: (params) => (
+        <Button
+          disabled={params.row.deletedAt ? true : false}
+          variant="contained"
+          color="success"
+          onClick={() => handleDelete(params.row)}
+        >
+          Recibido
+        </Button>
+      ),
+    },
+  ];
+
   return (
-    <div>
-      {!isLoading && !borrows?.length && <NotFoundImage/>}
+    <Container>
+      {!isLoading && !borrows?.length && <NotFoundImage />}
       {!isLoading && borrows && borrows.length > 0 && (
-        <Container>
-          <Paper>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell>Libro</TableCell>
-                  <TableCell>Socio</TableCell>
-                  <TableCell>Cantidad</TableCell>
-                  <TableCell>Préstamo externo</TableCell>
-                  <TableCell>Fecha de préstamo</TableCell>
-                  <TableCell>Fecha de entrega</TableCell>
-                  <TableCell>Acciones</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {borrows?.map((borrow, index) => (
-                  <TableRow key={index}>
-                    <TableCell>{borrow?.book?.title}</TableCell>
-                    <TableCell>{borrow?.member?.name}</TableCell>
-                    <TableCell>{borrow.stock}</TableCell>
-                    <TableCell>
-                      {borrow.book.externalBorrow.toUpperCase()}
-                    </TableCell>
-                    <TableCell>
-                      {new Date(borrow.createdAt).toLocaleDateString()}
-                    </TableCell>
-                    <TableCell>
-                      {borrow.deletedAt
-                        ? new Date(borrow.deletedAt).toLocaleDateString()
-                        : "No Entregado"}
-                    </TableCell>
-                    <TableCell>
-                      <Button
-                        disabled={borrow.deletedAt ? true : false}
-                        variant="contained"
-                        color="success"
-                        onClick={() => handleDelete(borrow)}
-                      >
-                        Recibido
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </Paper>
-          {showAlert && typeof showAlert === "string" && (
-            <Alert message={showAlert} onClose={() => setShowAlert(false)} />
-          )}
-        </Container>
+        <Paper style={{ height: "auto" }}>
+          <DataGrid
+            rows={borrows.map((borrow, index) => ({
+              id: index,
+              _id: borrow._id,
+              bookTitle: borrow?.book?.title,
+              memberName: borrow?.member?.name,
+              stock: borrow.stock,
+              externalBorrow: borrow.book.externalBorrow.toUpperCase(),
+              createdAt: borrow.createdAt,
+              deletedAt: borrow.deletedAt,
+            }))}
+            columns={columns}
+            pageSizeOptions={[10, 25, 50, 100]}
+            autoHeight
+            disableColumnResize
+            disableColumnSelector
+            disableDensitySelector
+            disableRowSelectionOnClick
+          />
+        </Paper>
       )}
-    </div>
+    </Container>
   );
 };

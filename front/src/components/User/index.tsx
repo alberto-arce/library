@@ -1,15 +1,6 @@
 import { useState, useEffect } from "react";
-import {
-  Container,
-  Table,
-  TableHead,
-  TableBody,
-  TableRow,
-  TableCell,
-  Paper,
-  Button,
-} from "@mui/material";
-
+import { Container, Button, Paper } from "@mui/material";
+import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import { AddItemDialog } from "../AddItemDialog";
 import { IUser } from "./interfaces";
 import { userService } from "../../services";
@@ -34,12 +25,12 @@ export const User = () => {
       } else {
         Alert({
           type: "error",
-          title: "Error al obtner los usuarios",
+          title: "Error al obtener los usuarios",
           text: "Por favor, intenta de nuevo más tarde",
           timer: 2000,
         });
       }
-    } catch (error) {
+    } catch {
       Alert({
         type: "error",
         title: "Oops...",
@@ -74,7 +65,7 @@ export const User = () => {
           timer: 2000,
         });
       }
-    } catch (error) {
+    } catch {
       Alert({
         type: "error",
         title: "Oops...",
@@ -109,7 +100,7 @@ export const User = () => {
           timer: 2000,
         });
       }
-    } catch (error) {
+    } catch {
       Alert({
         type: "error",
         title: "Oops...",
@@ -131,7 +122,7 @@ export const User = () => {
         confirmButtonColor: "#3085d6",
         cancelButtonColor: "#d33",
         showConfirmButton: true,
-        confirmButtonText: "Si, eliminar",
+        confirmButtonText: "Sí, eliminar",
         position: "center",
         onConfirm: async () => {
           const response = await userService.delete(_id);
@@ -153,7 +144,7 @@ export const User = () => {
           }
         },
       });
-    } catch (error) {
+    } catch {
       Alert({
         type: "error",
         title: "Oops...",
@@ -163,13 +154,49 @@ export const User = () => {
     }
   };
 
-  const handleOpenAddUserDialog = () => {
-    setIsAddingUser(true);
-  };
+  const handleOpenAddUserDialog = () => setIsAddingUser(true);
+  const handleCloseAddUserDialog = () => setIsAddingUser(false);
 
-  const handleCloseAddUserDialog = () => {
-    setIsAddingUser(false);
-  };
+  const columns: GridColDef[] = [
+    {
+      field: "name",
+      headerName: "Nombre",
+      headerAlign: "center",
+      align: "center",
+      flex: 1,
+      editable: false,
+      hideable: false,
+    },
+    {
+      field: "actions",
+      headerName: "Acciones",
+      headerAlign: "center",
+      align: "center",
+      flex: 1,
+      sortable: false,
+      disableColumnMenu: true,
+      editable: false,
+      renderCell: (params) => (
+        <>
+          <Button
+            variant="contained"
+            color="warning"
+            onClick={() => handleEdit(params.row)}
+            sx={{ marginRight: 2 }}
+          >
+            Editar
+          </Button>
+          <Button
+            variant="contained"
+            color="error"
+            onClick={() => handleDelete(params.row._id)}
+          >
+            Eliminar
+          </Button>
+        </>
+      ),
+    },
+  ];
 
   return (
     <Container>
@@ -177,48 +204,27 @@ export const User = () => {
         variant="contained"
         color="success"
         onClick={handleOpenAddUserDialog}
-        style={{ marginBottom: "20px" }}
+        sx={{ marginBottom: 2 }}
       >
         Agregar usuario
       </Button>
       {!isLoading && !users?.length && <NotFoundImage />}
       {!isLoading && users && users.length > 0 && (
-        <div>
-          <Paper>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell>Nombre</TableCell>
-                  <TableCell>Acciones</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {users?.map((user, index) => (
-                  <TableRow key={index}>
-                    <TableCell>{user.name}</TableCell>
-                    <TableCell>
-                      <Button
-                        variant="contained"
-                        color="warning"
-                        onClick={() => handleEdit(user)}
-                        sx={{ marginRight: 2 }}
-                      >
-                        Editar
-                      </Button>
-                      <Button
-                        variant="contained"
-                        color="error"
-                        onClick={() => handleDelete(user._id)}
-                      >
-                        Eliminar
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </Paper>
-        </div>
+        <Paper style={{ height: "auto" }}>
+          <DataGrid
+            rows={users?.map((user, index) => ({
+              id: index,
+              _id: user._id,
+              name: user.name,
+            }))}
+            columns={columns}
+            pageSizeOptions={[10, 25, 50, 100]}
+            autoHeight
+            disableColumnResize
+            disableRowSelectionOnClick
+            disableDensitySelector
+          />
+        </Paper>
       )}
       <AddItemDialog
         open={isAddingUser}

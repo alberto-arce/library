@@ -1,15 +1,6 @@
 import { useState, useEffect } from "react";
-import {
-  Container,
-  Table,
-  TableHead,
-  TableBody,
-  TableRow,
-  TableCell,
-  Paper,
-  Button,
-} from "@mui/material";
-
+import { Container, Button, Paper } from "@mui/material";
+import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import { AddItemDialog } from "../AddItemDialog";
 import { BorrowModal } from "../BorrowModal";
 import { IBook } from "./interfaces";
@@ -42,7 +33,7 @@ export const Book = () => {
           timer: 2000,
         });
       }
-    } catch (error) {
+    } catch {
       Alert({
         type: "error",
         title: "Oops...",
@@ -76,7 +67,7 @@ export const Book = () => {
           text: "No se pudo agregar el libro. Por favor, inténtalo de nuevo.",
         });
       }
-    } catch (error) {
+    } catch {
       Alert({
         type: "error",
         title: "Oops...",
@@ -107,13 +98,15 @@ export const Book = () => {
           type: "error",
           title: "Error al Editar Libro",
           text: "No se pudieron guardar los cambios. Inténtalo nuevamente.",
+          timer: 2000
         });
       }
-    } catch (error) {
+    } catch {
       Alert({
         type: "error",
         title: "Oops...",
         text: "Hubo un problema. Por favor, intenta de nuevo más tarde.",
+        timer: 2000
       });
     }
     setIsEditing(false);
@@ -130,7 +123,7 @@ export const Book = () => {
         confirmButtonColor: "#3085d6",
         cancelButtonColor: "#d33",
         showConfirmButton: true,
-        confirmButtonText: "Si, eliminar",
+        confirmButtonText: "Sí, eliminar",
         position: "center",
         onConfirm: async () => {
           const response = await bookService.delete(_id);
@@ -152,7 +145,7 @@ export const Book = () => {
           }
         },
       });
-    } catch (error) {
+    } catch {
       Alert({
         type: "error",
         title: "Oops...",
@@ -162,26 +155,100 @@ export const Book = () => {
     }
   };
 
-  const handleOpenAddBookDialog = () => {
-    setIsAddingBook(true);
-  };
-
-  const handleCloseAddBookDialog = () => {
-    setIsAddingBook(false);
-  };
+  const handleOpenAddBookDialog = () => setIsAddingBook(true);
+  const handleCloseAddBookDialog = () => setIsAddingBook(false);
 
   const openBorrowModal = (book: IBook) => {
     setSelectedBook(book);
     setIsBorrowModalOpen(true);
   };
 
-  const closeBorrowModal = () => {
-    setIsBorrowModalOpen(false);
-  };
+  const closeBorrowModal = () => setIsBorrowModalOpen(false);
 
-  const handleBookBorrowed = async () => {
-    fetchData();
-  };
+  const handleBookBorrowed = async () => fetchData();
+
+  const columns: GridColDef[] = [
+    {
+      field: "title",
+      headerName: "Título",
+      headerAlign: "center",
+      align: "center",
+      flex: 1,
+    },
+    {
+      field: "author",
+      headerName: "Autor",
+      headerAlign: "center",
+      align: "center",
+      flex: 1,
+    },
+    {
+      field: "category",
+      headerName: "Categoría",
+      headerAlign: "center",
+      align: "center",
+      flex: 1,
+    },
+    {
+      field: "isbn",
+      headerName: "ISBN",
+      headerAlign: "center",
+      align: "center",
+      flex: 1,
+    },
+    {
+      field: "stock",
+      headerName: "Cantidad",
+      headerAlign: "center",
+      align: "center",
+      flex: 1,
+    },
+    {
+      field: "externalBorrow",
+      headerName: "Préstamo externo",
+      headerAlign: "center",
+      align: "center",
+      flex: 1,
+      renderCell: (params) => params.value.toUpperCase(),
+    },
+    {
+      field: "actions",
+      headerName: "Acciones",
+      headerAlign: "center",
+      align: "center",
+      flex: 3,
+      sortable: false,
+      disableColumnMenu: true,
+      renderCell: (params) => (
+        <>
+          <Button
+            disabled={!params.row.stock}
+            variant="contained"
+            color="secondary"
+            onClick={() => openBorrowModal(params.row)}
+            sx={{ marginRight: 2 }}
+          >
+            Prestar
+          </Button>
+          <Button
+            variant="contained"
+            color="warning"
+            onClick={() => handleEdit(params.row)}
+            sx={{ marginRight: 2 }}
+          >
+            Editar
+          </Button>
+          <Button
+            variant="contained"
+            color="error"
+            onClick={() => handleDelete(params.row._id)}
+          >
+            Eliminar
+          </Button>
+        </>
+      ),
+    },
+  ];
 
   return (
     <Container>
@@ -195,61 +262,26 @@ export const Book = () => {
       </Button>
       {!isLoading && !books?.length && <NotFoundImage />}
       {!isLoading && books && books.length > 0 && (
-        <div>
-          <Paper>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell>Título</TableCell>
-                  <TableCell>Autor</TableCell>
-                  <TableCell>Categoría</TableCell>
-                  <TableCell>ISBN</TableCell>
-                  <TableCell>Cantidad</TableCell>
-                  <TableCell>Préstamo externo</TableCell>
-                  <TableCell>Acciones</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {books?.map((book, index) => (
-                  <TableRow key={index}>
-                    <TableCell>{book.title}</TableCell>
-                    <TableCell>{book.author}</TableCell>
-                    <TableCell>{book.category}</TableCell>
-                    <TableCell>{book.isbn}</TableCell>
-                    <TableCell>{book.stock}</TableCell>
-                    <TableCell>{book.externalBorrow.toUpperCase()}</TableCell>
-                    <TableCell>
-                      <Button
-                        disabled={book.stock ? false : true}
-                        variant="contained"
-                        color="secondary"
-                        onClick={() => openBorrowModal(book)}
-                        sx={{ marginRight: 2 }}
-                      >
-                        Prestar
-                      </Button>
-                      <Button
-                        variant="contained"
-                        color="warning"
-                        onClick={() => handleEdit(book)}
-                        sx={{ marginRight: 2 }}
-                      >
-                        Editar
-                      </Button>
-                      <Button
-                        variant="contained"
-                        color="error"
-                        onClick={() => handleDelete(book._id)}
-                      >
-                        Eliminar
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </Paper>
-        </div>
+        <Paper style={{ height: "auto" }}>
+          <DataGrid
+            rows={books?.map((book, index) => ({
+              id: index,
+              _id: book._id,
+              title: book.title,
+              author: book.author,
+              category: book.category,
+              isbn: book.isbn,
+              stock: book.stock,
+              externalBorrow: book.externalBorrow,
+            }))}
+            columns={columns}
+            pageSizeOptions={[10, 25, 50, 100]}
+            autoHeight
+            disableColumnResize
+            disableRowSelectionOnClick
+            disableDensitySelector
+          />
+        </Paper>
       )}
       <AddItemDialog
         open={isAddingBook}

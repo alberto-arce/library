@@ -1,15 +1,6 @@
 import { useState, useEffect } from "react";
-import {
-  Container,
-  Table,
-  TableHead,
-  TableBody,
-  TableRow,
-  TableCell,
-  Paper,
-  Button,
-} from "@mui/material";
-
+import { Container, Button, Paper } from "@mui/material";
+import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import { AddItemDialog } from "../AddItemDialog";
 import { EditItemDialog } from "../EditItemDialog";
 import { IMember } from "./interfaces";
@@ -39,7 +30,7 @@ export const Member = () => {
           timer: 2000,
         });
       }
-    } catch (error) {
+    } catch {
       Alert({
         type: "error",
         title: "Oops...",
@@ -74,7 +65,7 @@ export const Member = () => {
           timer: 2000,
         });
       }
-    } catch (error) {
+    } catch {
       Alert({
         type: "error",
         title: "Oops...",
@@ -112,11 +103,12 @@ export const Member = () => {
           timer: 2000,
         });
       }
-    } catch (error) {
+    } catch {
       Alert({
         type: "error",
         title: "Oops...",
         text: "Hubo un problema. Por favor, intenta de nuevo más tarde.",
+        timer: 2000,
       });
     }
     setIsEditing(false);
@@ -133,7 +125,7 @@ export const Member = () => {
         confirmButtonColor: "#3085d6",
         cancelButtonColor: "#d33",
         showConfirmButton: true,
-        confirmButtonText: "Si, eliminar",
+        confirmButtonText: "Sí, eliminar",
         position: "center",
         onConfirm: async () => {
           const response = await memberService.delete(_id);
@@ -149,13 +141,13 @@ export const Member = () => {
             Alert({
               type: "error",
               title: "Error al Eliminar Socio",
-              text: "No se pudo eliminar el socio. Por favor, intenta de nuevo más tarde.",
+              text: response.error || "No se pudo eliminar el socio. Por favor, intenta de nuevo más tarde.",
               timer: 2000,
             });
           }
         },
       });
-    } catch (error) {
+    } catch {
       Alert({
         type: "error",
         title: "Oops...",
@@ -196,7 +188,7 @@ export const Member = () => {
               timer: 2000,
             });
           }
-        } catch (error) {
+        } catch {
           Alert({
             type: "error",
             title: "Oops...",
@@ -207,14 +199,70 @@ export const Member = () => {
       },
     });
   };
-  
-  const handleOpenAddMemberDialog = () => {
-    setisAddingMember(true);
-  };
 
-  const handleCloseAddMemberDialog = () => {
-    setisAddingMember(false);
-  };
+  const handleOpenAddMemberDialog = () => setisAddingMember(true);
+  const handleCloseAddMemberDialog = () => setisAddingMember(false);
+
+  const columns: GridColDef[] = [
+    {
+      field: "name",
+      headerName: "Nombre",
+      headerAlign: "center",
+      align: "center",
+      flex: 1,
+      editable: false,
+      hideable: false,
+    },
+    {
+      field: "status",
+      headerName: "Estado",
+      headerAlign: "center",
+      align: "center",
+      flex: 1,
+      editable: false,
+      hideable: false,
+      renderCell: (params) => params.value.toUpperCase(),
+    },
+    {
+      field: "actions",
+      headerName: "Acciones",
+      headerAlign: "center",
+      align: "center",
+      flex: 1,
+      sortable: false,
+      disableColumnMenu: true,
+      renderCell: (params) => (
+        <>
+          <Button
+            disabled={params.row.status.toLowerCase() === "bloqueado"}
+            variant="contained"
+            color="warning"
+            onClick={() => handleEdit(params.row)}
+            sx={{ marginRight: 2 }}
+          >
+            Editar
+          </Button>
+          <Button
+            disabled={params.row.status.toLowerCase() === "bloqueado"}
+            variant="contained"
+            color="error"
+            onClick={() => handleDelete(params.row._id)}
+            sx={{ marginRight: 2 }}
+          >
+            Eliminar
+          </Button>
+          <Button
+            disabled={params.row.status.toLowerCase() === "activado"}
+            variant="contained"
+            color="secondary"
+            onClick={() => handleActivate(params.row._id)}
+          >
+            Activar
+          </Button>
+        </>
+      ),
+    },
+  ];
 
   return (
     <Container>
@@ -228,67 +276,22 @@ export const Member = () => {
       </Button>
       {!isLoading && !members?.length && <NotFoundImage />}
       {!isLoading && members && members.length > 0 && (
-        <div>
-          <Paper>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell>Nombre</TableCell>
-                  <TableCell>Estado</TableCell>
-                  <TableCell>Acciones</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {members?.map((member, index) => (
-                  <TableRow key={index}>
-                    <TableCell>{member.name}</TableCell>
-                    <TableCell>{member.status.toUpperCase()}</TableCell>
-                    <TableCell>
-                      <Button
-                        disabled={
-                          member.status.toLowerCase() === "bloqueado"
-                            ? true
-                            : false
-                        }
-                        variant="contained"
-                        color="warning"
-                        onClick={() => handleEdit(member)}
-                        sx={{ marginRight: 2 }}
-                      >
-                        Editar
-                      </Button>
-                      <Button
-                        disabled={
-                          member.status.toLowerCase() === "bloqueado"
-                            ? true
-                            : false
-                        }
-                        variant="contained"
-                        color="error"
-                        onClick={() => handleDelete(member._id)}
-                        sx={{ marginRight: 2 }}
-                      >
-                        Eliminar
-                      </Button>
-                      <Button
-                        disabled={
-                          member.status.toLowerCase() === "activado"
-                            ? true
-                            : false
-                        }
-                        variant="contained"
-                        color="secondary"
-                        onClick={() => handleActivate(member._id)}
-                      >
-                        Activar
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </Paper>
-        </div>
+        <Paper style={{ height: "auto" }}>
+          <DataGrid
+            rows={members?.map((member, index) => ({
+              id: index,
+              _id: member._id,
+              name: member.name,
+              status: member.status,
+            }))}
+            columns={columns}
+            pageSizeOptions={[10, 25, 50, 100]}
+            autoHeight
+            disableColumnResize
+            disableRowSelectionOnClick
+            disableDensitySelector
+          />
+        </Paper>
       )}
       <AddItemDialog
         open={isAddingMember}
