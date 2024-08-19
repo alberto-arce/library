@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { Container, Button, Paper } from "@mui/material";
+import { useState, useEffect, useMemo } from "react";
+import { Container, Button, Paper, TextField, Grid } from "@mui/material";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import { AddItemDialog } from "../AddItemDialog";
 import { IUser } from "./interfaces";
@@ -14,6 +14,7 @@ export const User = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [editUser, setEditUser] = useState<IUser | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [searchTerm, setSearchTerm] = useState<string>("");
 
   const fetchData = async () => {
     try {
@@ -45,6 +46,12 @@ export const User = () => {
   useEffect(() => {
     fetchData();
   }, []);
+  
+  const filteredUsers = useMemo(() => {
+    return users?.filter((user) =>
+      user.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }, [users, searchTerm]);
 
   const handleSaveNewUser = async (newUser: IUser) => {
     try {
@@ -200,19 +207,51 @@ export const User = () => {
 
   return (
     <Container>
-      <Button
-        variant="contained"
-        color="success"
-        onClick={handleOpenAddUserDialog}
-        sx={{ marginBottom: 2 }}
+      <Grid
+        container
+        spacing={2}
+        alignItems="center"
+        style={{ marginBottom: 20 }}
       >
-        Agregar usuario
-      </Button>
+        <Grid
+          item
+          xs={12}
+          sm={8}
+          md={9}
+          style={{ display: "flex", alignItems: "center" }}
+        >
+          <TextField
+            label="Buscar por nombre"
+            variant="outlined"
+            fullWidth
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            style={{ margin: 0 }}
+          />
+        </Grid>
+        <Grid
+          item
+          xs={12}
+          sm={4}
+          md={3}
+          style={{ display: "flex", alignItems: "center" }}
+        >
+          <Button
+            variant="contained"
+            color="success"
+            onClick={handleOpenAddUserDialog}
+            fullWidth
+            style={{ height: 55 }}
+          >
+            Agregar usuario
+          </Button>
+        </Grid>
+      </Grid>
       {!isLoading && !users?.length && <NotFoundImage />}
       {!isLoading && users && users.length > 0 && (
         <Paper style={{ height: "auto" }}>
           <DataGrid
-            rows={users?.map((user, index) => ({
+            rows={filteredUsers?.map((user, index) => ({
               id: index,
               _id: user._id,
               name: user.name,

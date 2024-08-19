@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
-import { Container, Paper, Button } from "@mui/material";
+import { Container, Paper, Button, Grid, TextField } from "@mui/material";
 
 import { borrowService } from "../../services";
 import { Alert } from "../Alert";
@@ -10,6 +10,7 @@ import { NotFoundImage } from "../NotFoundImage";
 export const Borrow = () => {
   const [borrows, setBorrows] = useState<IBorrow[] | undefined>(undefined);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [searchTerm, setSearchTerm] = useState<string>("");
 
   const fetchData = async () => {
     try {
@@ -39,6 +40,12 @@ export const Borrow = () => {
   useEffect(() => {
     fetchData();
   }, []);
+
+  const filteredBorrows = useMemo(() => {
+    return borrows?.filter((borrow) =>
+      borrow.book.title.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }, [borrows, searchTerm]);
 
   const handleDelete = async (borrow: IBorrow) => {
     try {
@@ -128,11 +135,30 @@ export const Borrow = () => {
 
   return (
     <Container>
+      <Grid
+        container
+        alignItems="center"
+        style={{ marginBottom: 20 }}
+      >
+        <Grid
+          item
+          xs={12}
+        >
+          <TextField
+            label="Buscar por libro"
+            variant="outlined"
+            fullWidth
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            style={{ margin: 0 }}
+          />
+        </Grid>
+      </Grid>
       {!isLoading && !borrows?.length && <NotFoundImage />}
       {!isLoading && borrows && borrows.length > 0 && (
         <Paper style={{ height: "auto" }}>
           <DataGrid
-            rows={borrows.map((borrow, index) => ({
+            rows={filteredBorrows?.map((borrow, index) => ({
               id: index,
               _id: borrow._id,
               bookTitle: borrow?.book?.title,

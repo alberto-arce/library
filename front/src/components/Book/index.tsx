@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { Container, Button, Paper } from "@mui/material";
+import { useState, useEffect, useMemo } from "react";
+import { Container, Button, Paper, Grid, TextField } from "@mui/material";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import { AddItemDialog } from "../AddItemDialog";
 import { BorrowModal } from "../BorrowModal";
@@ -17,6 +17,7 @@ export const Book = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [editBook, setEditBook] = useState<IBook | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [searchTerm, setSearchTerm] = useState<string>("");
 
   const fetchData = async () => {
     try {
@@ -48,6 +49,12 @@ export const Book = () => {
   useEffect(() => {
     fetchData();
   }, []);
+
+  const filteredBooks = useMemo(() => {
+    return books?.filter((book) =>
+      book.title.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }, [books, searchTerm]);
 
   const handleSaveNewBook = async (newBook: IBook) => {
     try {
@@ -252,19 +259,51 @@ export const Book = () => {
 
   return (
     <Container>
-      <Button
-        variant="contained"
-        color="success"
-        onClick={handleOpenAddBookDialog}
-        style={{ marginBottom: "20px" }}
+      <Grid
+        container
+        spacing={2}
+        alignItems="center"
+        style={{ marginBottom: 20 }}
       >
-        Agregar libro
-      </Button>
+        <Grid
+          item
+          xs={12}
+          sm={8}
+          md={9}
+          style={{ display: "flex", alignItems: "center" }}
+        >
+          <TextField
+            label="Buscar por título"
+            variant="outlined"
+            fullWidth
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            style={{ margin: 0 }}
+          />
+        </Grid>
+        <Grid
+          item
+          xs={12}
+          sm={4}
+          md={3}
+          style={{ display: "flex", alignItems: "center" }}
+        >
+          <Button
+            variant="contained"
+            color="success"
+            onClick={handleOpenAddBookDialog}
+            fullWidth
+            style={{ height: 55 }}
+          >
+            Agregar libro
+          </Button>
+        </Grid>
+      </Grid>
       {!isLoading && !books?.length && <NotFoundImage />}
       {!isLoading && books && books.length > 0 && (
         <Paper style={{ height: "auto" }}>
           <DataGrid
-            rows={books?.map((book, index) => ({
+            rows={filteredBooks?.map((book, index) => ({
               id: index,
               _id: book._id,
               title: book.title,

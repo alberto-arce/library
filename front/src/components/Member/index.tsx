@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { Container, Button, Paper } from "@mui/material";
+import { useState, useEffect, useMemo } from "react";
+import { Container, Button, Paper, Grid, TextField } from "@mui/material";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import { AddItemDialog } from "../AddItemDialog";
 import { EditItemDialog } from "../EditItemDialog";
@@ -14,6 +14,7 @@ export const Member = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [editMember, setEditMember] = useState<IMember | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [searchTerm, setSearchTerm] = useState<string>("");
 
   const fetchData = async () => {
     try {
@@ -45,6 +46,12 @@ export const Member = () => {
   useEffect(() => {
     fetchData();
   }, []);
+
+  const filteredMembers = useMemo(() => {
+    return members?.filter((member) =>
+      member.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }, [members, searchTerm]);
 
   const handleSaveNewMember = async (newMember: IMember) => {
     try {
@@ -141,7 +148,9 @@ export const Member = () => {
             Alert({
               type: "error",
               title: "Error al Eliminar Socio",
-              text: response.error || "No se pudo eliminar el socio. Por favor, intenta de nuevo más tarde.",
+              text:
+                response.error ||
+                "No se pudo eliminar el socio. Por favor, intenta de nuevo más tarde.",
               timer: 2000,
             });
           }
@@ -266,19 +275,51 @@ export const Member = () => {
 
   return (
     <Container>
-      <Button
-        variant="contained"
-        color="success"
-        onClick={handleOpenAddMemberDialog}
-        style={{ marginBottom: "20px" }}
+      <Grid
+        container
+        spacing={2}
+        alignItems="center"
+        style={{ marginBottom: 20 }}
       >
-        Agregar socio
-      </Button>
+        <Grid
+          item
+          xs={12}
+          sm={8}
+          md={9}
+          style={{ display: "flex", alignItems: "center" }}
+        >
+          <TextField
+            label="Buscar por nombre"
+            variant="outlined"
+            fullWidth
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            style={{ margin: 0 }}
+          />
+        </Grid>
+        <Grid
+          item
+          xs={12}
+          sm={4}
+          md={3}
+          style={{ display: "flex", alignItems: "center" }}
+        >
+          <Button
+            variant="contained"
+            color="success"
+            onClick={handleOpenAddMemberDialog}
+            fullWidth
+            style={{ height: 55 }}
+          >
+            Agregar socio
+          </Button>
+        </Grid>
+      </Grid>
       {!isLoading && !members?.length && <NotFoundImage />}
       {!isLoading && members && members.length > 0 && (
         <Paper style={{ height: "auto" }}>
           <DataGrid
-            rows={members?.map((member, index) => ({
+            rows={filteredMembers?.map((member, index) => ({
               id: index,
               _id: member._id,
               name: member.name,
