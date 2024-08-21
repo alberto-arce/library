@@ -3,11 +3,14 @@ import { api } from "./api";
 import { IMemberResponse } from "./interface";
 
 interface ICreateMember {
+  dni: number;
   name: string;
+  lastname: string;
 }
 
 interface IUpdateMember {
   name: string;
+  lastname: string;
 }
 
 interface IService {

@@ -9,18 +9,22 @@ export async function up(): Promise<void> {
   await UserModel.create([
     {
       name: "admin",
+      lastname: "admin",
       password: await bcrypt.hash("admin", 10),
       role: "admin",
     },
     {
       name: "emp",
+      lastname: "admin",
       password: await bcrypt.hash("emp", 10),
       role: "employee",
     },
   ]);
   await MemberModel.create([
     {
+      dni: 12345678,
       name: "Pedro",
+      lastname: "Gonzalez",
     },
   ]);
   await BookModel.create([

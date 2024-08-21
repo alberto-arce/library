@@ -211,15 +211,30 @@ export const Member = () => {
 
   const handleOpenAddMemberDialog = () => setisAddingMember(true);
   const handleCloseAddMemberDialog = () => setisAddingMember(false);
-
+  console.log(members);
   const columns: GridColDef[] = [
+    {
+      field: "dni",
+      headerName: "DNI",
+      headerAlign: "center",
+      align: "center",
+      flex: 1,
+      hideable: false,
+    },
     {
       field: "name",
       headerName: "Nombre",
       headerAlign: "center",
       align: "center",
       flex: 1,
-      editable: false,
+      hideable: false,
+    },
+    {
+      field: "lastname",
+      headerName: "Apellido",
+      headerAlign: "center",
+      align: "center",
+      flex: 1,
       hideable: false,
     },
     {
@@ -228,7 +243,6 @@ export const Member = () => {
       headerAlign: "center",
       align: "center",
       flex: 1,
-      editable: false,
       hideable: false,
       renderCell: (params) => params.value.toUpperCase(),
     },
@@ -237,7 +251,7 @@ export const Member = () => {
       headerName: "Acciones",
       headerAlign: "center",
       align: "center",
-      flex: 1,
+      flex: 2,
       sortable: false,
       disableColumnMenu: true,
       renderCell: (params) => (
@@ -275,78 +289,96 @@ export const Member = () => {
 
   return (
     <Container>
-      <Grid
-        container
-        spacing={2}
-        alignItems="center"
-        style={{ marginBottom: 20 }}
-      >
-        <Grid
-          item
-          xs={12}
-          sm={8}
-          md={9}
-          style={{ display: "flex", alignItems: "center" }}
-        >
-          <TextField
-            label="Buscar por nombre"
-            variant="outlined"
-            fullWidth
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            style={{ margin: 0 }}
-          />
-        </Grid>
-        <Grid
-          item
-          xs={12}
-          sm={4}
-          md={3}
-          style={{ display: "flex", alignItems: "center" }}
-        >
-          <Button
-            variant="contained"
-            color="success"
-            onClick={handleOpenAddMemberDialog}
-            fullWidth
-            style={{ height: 55 }}
-          >
-            Agregar socio
-          </Button>
-        </Grid>
-      </Grid>
       {!isLoading && !members?.length && <NotFoundImage />}
       {!isLoading && members && members.length > 0 && (
-        <Paper style={{ height: "auto" }}>
-          <DataGrid
-            rows={filteredMembers?.map((member, index) => ({
-              id: index,
-              _id: member._id,
-              name: member.name,
-              status: member.status,
-            }))}
-            columns={columns}
-            pageSizeOptions={[10, 25, 50, 100]}
-            autoHeight
-            disableColumnResize
-            disableRowSelectionOnClick
-            disableDensitySelector
-          />
-        </Paper>
+        <>
+          <Grid
+            container
+            spacing={2}
+            alignItems="center"
+            style={{ marginBottom: 20 }}
+          >
+            <Grid
+              item
+              xs={12}
+              sm={8}
+              md={9}
+              style={{ display: "flex", alignItems: "center" }}
+            >
+              <TextField
+                placeholder="Buscar por nombre"
+                variant="outlined"
+                fullWidth
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                style={{ margin: 0, backgroundColor: "#ffffff" }}
+              />
+            </Grid>
+            <Grid
+              item
+              xs={12}
+              sm={4}
+              md={3}
+              style={{ display: "flex", alignItems: "center" }}
+            >
+              <Button
+                variant="contained"
+                color="success"
+                onClick={handleOpenAddMemberDialog}
+                fullWidth
+                style={{ height: 55 }}
+              >
+                Agregar socio
+              </Button>
+            </Grid>
+          </Grid>
+          <Paper style={{ height: "auto" }}>
+            <DataGrid
+              rows={filteredMembers?.map((member, index) => ({
+                id: index,
+                _id: member._id,
+                dni: member.dni,
+                name: member.name,
+                lastname: member.lastname,
+                status: member.status,
+              }))}
+              columns={columns}
+              pageSizeOptions={[10, 25, 50, 100]}
+              autoHeight
+              disableColumnResize
+              disableColumnSelector
+              disableRowSelectionOnClick
+              disableDensitySelector
+              localeText={{
+                noRowsLabel: "No hay socios",
+                columnMenuFilter: "Filtro",
+                columnMenuSortAsc: "Ordenar ascendente",
+                columnMenuSortDesc: "Ordenar descendente",
+              }}
+            />
+          </Paper>
+        </>
       )}
       <AddItemDialog
         open={isAddingMember}
         onClose={handleCloseAddMemberDialog}
         onSave={handleSaveNewMember}
         title="Agregar socio"
-        fields={[{ label: "Nombre", value: "name" }]}
+        fields={[
+          { label: "DNI", value: "dni" },
+          { label: "Nombre", value: "name" },
+          { label: "Apellido", value: "lastname" },
+        ]}
       />
       <EditItemDialog
         open={isEditing}
         onClose={() => setIsEditing(false)}
         onSave={handleSaveEdit}
         title="Editar socio"
-        fields={[{ label: "Nombre", value: "name" }]}
+        fields={[
+          { label: "Nombre", value: "name" },
+          { label: "Apellido", value: "lastname" },
+        ]}
         initialData={editMember}
       />
     </Container>

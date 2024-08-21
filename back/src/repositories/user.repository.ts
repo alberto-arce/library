@@ -1,5 +1,5 @@
 import { IUser } from "../interfaces";
-import { UserModel } from "../models";
+import { User, UserModel } from "../models";
 
 class UserRepository {
   async getAll() {
@@ -10,7 +10,7 @@ class UserRepository {
     return UserModel.findById(id).exec();
   }
 
-  async create(user: IUser) {
+  async create(user: User) {
     return UserModel.create(user);
   }
 

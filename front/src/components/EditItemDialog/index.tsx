@@ -6,9 +6,8 @@ import {
   DialogContent,
   DialogActions,
   FormControl,
-  Input,
-  FormHelperText,
   Button,
+  TextField,
 } from "@mui/material";
 
 import { IEditItemProps } from "./interfaces";
@@ -44,13 +43,22 @@ export const EditItemDialog = ({
           <FormControl
             fullWidth
             key={field.label}
-            style={{ marginBottom: "30px" }}
+            style={{ margin: 5 }}
           >
-            <Input
+            {/* <Input
               value={editedData[field.value] || ""}
               onChange={(e) => handleFieldChange(field.value, e.target.value)}
             />
-            <FormHelperText>{field.label}</FormHelperText>
+            <FormHelperText>{field.label}</FormHelperText> */}
+            <TextField
+              type={field.value === "password" ? "password" : "text"}
+              value={editedData[field.value] || ""}
+              onChange={(e) => handleFieldChange(field.value, e.target.value)}
+              label={field.label}
+              placeholder={`${field.label}`}
+              variant="outlined"
+              fullWidth
+            />
           </FormControl>
         ))}
       </DialogContent>

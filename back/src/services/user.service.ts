@@ -26,9 +26,10 @@ class UserService {
   }
 
   async create(req: Request) {
-    const { name, password, role } = req.body;
+    const { name, lastname, password, role } = req.body;
     const createdUser = await userRepository.create({
       name,
+      lastname,
       password: await bcrypt.hash(password, 10),
       role: role ?? "employee",
     });

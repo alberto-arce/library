@@ -3,11 +3,13 @@ import { IUserResponse } from "./interface";
 
 interface ICreateUser {
   name: string;
+  lastname: string;
   password: string;
 }
 
 interface IUpdateUser {
   name: string;
+  lastname: string;
 }
 
 interface IService {

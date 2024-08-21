@@ -6,6 +6,7 @@ import { borrowService } from "../../services";
 import { Alert } from "../Alert";
 import { IBorrow } from "./interfaces";
 import { NotFoundImage } from "../NotFoundImage";
+import "./index.css";
 
 export const Borrow = () => {
   const [borrows, setBorrows] = useState<IBorrow[] | undefined>(undefined);
@@ -77,6 +78,15 @@ export const Borrow = () => {
       headerAlign: "center",
       align: "center",
       flex: 1,
+      hideable: false,
+    },
+    {
+      field: "memberDni",
+      headerName: "DNI Socio",
+      headerAlign: "center",
+      align: "center",
+      flex: 1,
+      hideable: false,
     },
     {
       field: "memberName",
@@ -84,6 +94,7 @@ export const Borrow = () => {
       headerAlign: "center",
       align: "center",
       flex: 1,
+      hideable: false,
     },
     {
       field: "stock",
@@ -91,6 +102,7 @@ export const Borrow = () => {
       headerAlign: "center",
       align: "center",
       flex: 1,
+      hideable: false,
     },
     {
       field: "externalBorrow",
@@ -98,12 +110,14 @@ export const Borrow = () => {
       headerAlign: "center",
       align: "center",
       flex: 1,
+      hideable: false,
     },
     {
       field: "createdAt",
       headerName: "Fecha de préstamo",
       flex: 1,
       valueFormatter: (params) => new Date(params).toLocaleDateString(),
+      hideable: false,
     },
     {
       field: "deletedAt",
@@ -111,6 +125,7 @@ export const Borrow = () => {
       headerAlign: "center",
       align: "center",
       flex: 1,
+      hideable: false,
       valueFormatter: (params) =>
         params ? new Date(params).toLocaleDateString() : "No Entregado",
     },
@@ -120,9 +135,10 @@ export const Borrow = () => {
       headerAlign: "center",
       align: "center",
       flex: 1,
+      disableColumnMenu: true,
       renderCell: (params) => (
         <Button
-          disabled={params.row.deletedAt ? true : false}
+          disabled={!!params.row.deletedAt}
           variant="contained"
           color="success"
           onClick={() => handleDelete(params.row)}
@@ -133,50 +149,57 @@ export const Borrow = () => {
     },
   ];
 
+  const getRowClassName = (params: { row: { deletedAt: Date | null } }) => {
+    return params.row.deletedAt ? "row-disabled" : "";
+  };
+
   return (
     <Container>
-      <Grid
-        container
-        alignItems="center"
-        style={{ marginBottom: 20 }}
-      >
-        <Grid
-          item
-          xs={12}
-        >
-          <TextField
-            label="Buscar por libro"
-            variant="outlined"
-            fullWidth
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            style={{ margin: 0 }}
-          />
-        </Grid>
-      </Grid>
       {!isLoading && !borrows?.length && <NotFoundImage />}
       {!isLoading && borrows && borrows.length > 0 && (
-        <Paper style={{ height: "auto" }}>
-          <DataGrid
-            rows={filteredBorrows?.map((borrow, index) => ({
-              id: index,
-              _id: borrow._id,
-              bookTitle: borrow?.book?.title,
-              memberName: borrow?.member?.name,
-              stock: borrow.stock,
-              externalBorrow: borrow.book.externalBorrow.toUpperCase(),
-              createdAt: borrow.createdAt,
-              deletedAt: borrow.deletedAt,
-            }))}
-            columns={columns}
-            pageSizeOptions={[10, 25, 50, 100]}
-            autoHeight
-            disableColumnResize
-            disableColumnSelector
-            disableDensitySelector
-            disableRowSelectionOnClick
-          />
-        </Paper>
+        <>
+          <Grid container alignItems="center" style={{ marginBottom: 20 }}>
+            <Grid item xs={12}>
+              <TextField
+                placeholder="Buscar por libro"
+                variant="outlined"
+                fullWidth
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                style={{ margin: 0, backgroundColor: "#ffffff" }}
+              />
+            </Grid>
+          </Grid>
+          <Paper style={{ height: "auto" }}>
+            <DataGrid
+              rows={filteredBorrows?.map((borrow, index) => ({
+                id: index,
+                _id: borrow._id,
+                bookTitle: borrow?.book?.title,
+                memberDni: borrow?.member?.dni,
+                memberName: borrow?.member?.name,
+                stock: borrow.stock,
+                externalBorrow: borrow.book.externalBorrow.toUpperCase(),
+                createdAt: borrow.createdAt,
+                deletedAt: borrow.deletedAt,
+              }))}
+              columns={columns}
+              pageSizeOptions={[10, 25, 50, 100]}
+              autoHeight
+              disableColumnResize
+              disableColumnSelector
+              disableDensitySelector
+              disableRowSelectionOnClick
+              getRowClassName={getRowClassName}
+              localeText={{
+                noRowsLabel: "No hay préstamos",
+                columnMenuFilter: "Filtro",
+                columnMenuSortAsc: "Ordenar ascendente",
+                columnMenuSortDesc: "Ordenar descendente",
+              }}
+            />
+          </Paper>
+        </>
       )}
     </Container>
   );

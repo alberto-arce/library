@@ -3,6 +3,9 @@ import { prop, getModelForClass } from "@typegoose/typegoose";
 export class User {
   @prop({ required: true, type: String })
   name!: string;
+ 
+  @prop({ required: true, type: String })
+  lastname!: string;
 
   @prop({ required: true, type: String })
   password!: string;

@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { Container, Button, Paper, TextField, Grid } from "@mui/material";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
+
 import { AddItemDialog } from "../AddItemDialog";
 import { IUser } from "./interfaces";
 import { userService } from "../../services";
@@ -46,7 +47,7 @@ export const User = () => {
   useEffect(() => {
     fetchData();
   }, []);
-  
+
   const filteredUsers = useMemo(() => {
     return users?.filter((user) =>
       user.name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -171,7 +172,14 @@ export const User = () => {
       headerAlign: "center",
       align: "center",
       flex: 1,
-      editable: false,
+      hideable: false,
+    },
+    {
+      field: "lastname",
+      headerName: "Apellido",
+      headerAlign: "center",
+      align: "center",
+      flex: 1,
       hideable: false,
     },
     {
@@ -182,7 +190,7 @@ export const User = () => {
       flex: 1,
       sortable: false,
       disableColumnMenu: true,
-      editable: false,
+      hideable: false,
       renderCell: (params) => (
         <>
           <Button
@@ -207,63 +215,73 @@ export const User = () => {
 
   return (
     <Container>
-      <Grid
-        container
-        spacing={2}
-        alignItems="center"
-        style={{ marginBottom: 20 }}
-      >
-        <Grid
-          item
-          xs={12}
-          sm={8}
-          md={9}
-          style={{ display: "flex", alignItems: "center" }}
-        >
-          <TextField
-            label="Buscar por nombre"
-            variant="outlined"
-            fullWidth
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            style={{ margin: 0 }}
-          />
-        </Grid>
-        <Grid
-          item
-          xs={12}
-          sm={4}
-          md={3}
-          style={{ display: "flex", alignItems: "center" }}
-        >
-          <Button
-            variant="contained"
-            color="success"
-            onClick={handleOpenAddUserDialog}
-            fullWidth
-            style={{ height: 55 }}
-          >
-            Agregar usuario
-          </Button>
-        </Grid>
-      </Grid>
       {!isLoading && !users?.length && <NotFoundImage />}
       {!isLoading && users && users.length > 0 && (
-        <Paper style={{ height: "auto" }}>
-          <DataGrid
-            rows={filteredUsers?.map((user, index) => ({
-              id: index,
-              _id: user._id,
-              name: user.name,
-            }))}
-            columns={columns}
-            pageSizeOptions={[10, 25, 50, 100]}
-            autoHeight
-            disableColumnResize
-            disableRowSelectionOnClick
-            disableDensitySelector
-          />
-        </Paper>
+        <>
+          <Grid
+            container
+            spacing={2}
+            alignItems="center"
+            style={{ marginBottom: 20 }}
+          >
+            <Grid
+              item
+              xs={12}
+              sm={8}
+              md={9}
+              style={{ display: "flex", alignItems: "center" }}
+            >
+              <TextField
+                placeholder="Buscar por nombre"
+                variant="outlined"
+                fullWidth
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                style={{ margin: 0, backgroundColor: "#ffffff" }}
+              />
+            </Grid>
+            <Grid
+              item
+              xs={12}
+              sm={4}
+              md={3}
+              style={{ display: "flex", alignItems: "center" }}
+            >
+              <Button
+                variant="contained"
+                color="success"
+                onClick={handleOpenAddUserDialog}
+                fullWidth
+                style={{ height: 55 }}
+              >
+                Agregar usuario
+              </Button>
+            </Grid>
+          </Grid>
+          <Paper style={{ height: "auto" }}>
+            <DataGrid
+              rows={filteredUsers?.map((user, index) => ({
+                id: index,
+                _id: user._id,
+                lastname: user.lastname,
+                name: user.name,
+              }))}
+              columns={columns}
+              pageSizeOptions={[10, 25, 50, 100]}
+              autoHeight
+              disableColumnResize
+              disableColumnSelector
+              disableDensitySelector
+              disableRowSelectionOnClick
+              localeText={{
+                noRowsLabel: "No hay usuarios",
+                columnMenuFilter: "Filtro",
+                columnMenuSortAsc: "Ordenar ascendente",
+                columnMenuSortDesc: "Ordenar descendente",
+              }}
+            />
+          </Paper>
+        </>
       )}
       <AddItemDialog
         open={isAddingUser}
@@ -272,6 +290,7 @@ export const User = () => {
         title="Agregar usuario"
         fields={[
           { label: "Nombre", value: "name" },
+          { label: "Apellido", value: "lastname" },
           { label: "Contraseña", value: "password" },
         ]}
       />
@@ -280,7 +299,10 @@ export const User = () => {
         onClose={() => setIsEditing(false)}
         onSave={handleSaveEdit}
         title="Editar usuario"
-        fields={[{ label: "Nombre", value: "name" }]}
+        fields={[
+          { label: "Nombre", value: "name" },
+          { label: "Apellido", value: "lastname" },
+        ]}
         initialData={editUser}
       />
     </Container>

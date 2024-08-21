@@ -13,6 +13,7 @@ export interface IResponse<T> {
 export interface ILoginResponse {
   user?: {
     name: string;
+    lastname: string;
     role: string;
   };
   token?: string;

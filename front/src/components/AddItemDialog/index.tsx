@@ -1,17 +1,33 @@
-import { useState } from "react";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { useState, useEffect, useCallback } from "react";
 import {
   Dialog,
   DialogTitle,
   DialogContent,
   DialogActions,
   FormControl,
-  Input,
+  TextField,
   Button,
   Select,
   MenuItem,
 } from "@mui/material";
 
-import { IAddItemProps } from "./interfaces";
+interface FormField {
+  label: string;
+  value: string;
+}
+
+interface Item {
+  [key: string]: string;
+}
+
+interface IAddItemProps {
+  open: boolean;
+  onClose: () => void;
+  onSave: (item: any) => Promise<void>;
+  title: string;
+  fields: FormField[];
+}
 
 export const AddItemDialog = ({
   open,
@@ -20,20 +36,60 @@ export const AddItemDialog = ({
   title,
   fields,
 }: IAddItemProps) => {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [item, setItem] = useState<any>({});
+  const [item, setItem] = useState<Item>({});
+  const [isFormValid, setIsFormValid] = useState<boolean>(false);
+
+  const checkFormValidity = useCallback(() => {
+    const allFieldsFilled = fields.every((field) => {
+      if (field.value === "dni") {
+        return item[field.value]?.trim().length === 8;
+      }
+      if (field.value === "externalBorrow") {
+        return item[field.value] !== "";
+      }
+      return item[field.value]?.trim() !== "";
+    });
+    setIsFormValid(allFieldsFilled);
+  }, [fields, item]);
+
+  useEffect(() => {
+    if (open) {
+      setItem(
+        fields.reduce((acc, field) => {
+          acc[field.value] = "";
+          return acc;
+        }, {} as Item)
+      );
+      setIsFormValid(false);
+    }
+  }, [open, fields]);
+
+  useEffect(() => {
+    checkFormValidity();
+  }, [item, checkFormValidity]);
+
   const handleFieldChange = (field: string, value: string) => {
-    setItem({ ...item, [field]: value });
+    setItem((prevItem) => ({ ...prevItem, [field]: value }));
   };
 
   const handleSave = () => {
     onSave(item);
-    setItem({});
+    setItem(
+      fields.reduce((acc, field) => {
+        acc[field.value] = "";
+        return acc;
+      }, {} as Item)
+    );
   };
 
   const handleClose = () => {
     onClose();
-    setItem({});
+    setItem(
+      fields.reduce((acc, field) => {
+        acc[field.value] = "";
+        return acc;
+      }, {} as Item)
+    );
   };
 
   return (
@@ -41,26 +97,37 @@ export const AddItemDialog = ({
       <DialogTitle>{title}</DialogTitle>
       <DialogContent>
         {fields.map((field) => (
-          <FormControl
-            fullWidth
-            key={field.label}
-            style={{ marginBottom: "30px" }}
-          >
+          <FormControl fullWidth key={field.label} style={{ margin: 10 }}>
             {field.value === "externalBorrow" ? (
               <Select
                 value={item[field.value] || ""}
                 onChange={(e) =>
                   handleFieldChange(field.value, e.target.value as string)
                 }
+                displayEmpty
               >
+                <MenuItem value="" disabled>
+                  ¿Es un préstamo externo?
+                </MenuItem>
                 <MenuItem value="si">Si</MenuItem>
                 <MenuItem value="no">No</MenuItem>
               </Select>
             ) : (
-              <Input
+              <TextField
+                type={field.value === "password" ? "password" : "text"}
                 value={item[field.value] || ""}
                 onChange={(e) => handleFieldChange(field.value, e.target.value)}
+                label={field.label}
                 placeholder={`${field.label}`}
+                variant="outlined"
+                fullWidth
+                inputProps={field.value === "dni" ? { maxLength: 8 } : {}}
+                helperText={
+                  field.value === "dni" &&
+                  (item[field.value]?.trim().length !== 8
+                    ? "Ingresar los 8 dígitos del DNI"
+                    : "")
+                }
               />
             )}
           </FormControl>
@@ -70,7 +137,12 @@ export const AddItemDialog = ({
         <Button onClick={handleClose} variant="contained" color="error">
           Cancelar
         </Button>
-        <Button onClick={handleSave} variant="contained" color="success">
+        <Button
+          onClick={handleSave}
+          variant="contained"
+          color="success"
+          disabled={!isFormValid}
+        >
           Guardar
         </Button>
       </DialogActions>

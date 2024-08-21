@@ -1,4 +1,4 @@
-import { MemberModel } from "../models";
+import { Member, MemberModel } from "../models";
 
 class MemberRepository {
   async getAll(criteria?: any) {
@@ -9,11 +9,11 @@ class MemberRepository {
     return MemberModel.findById(id).exec();
   }
 
-  async create(newMember: any) {
+  async create(newMember: Member) {
     return MemberModel.create(newMember);
   }
 
-  async update(ids: string | string[], updateMember: any) {
+  async update(ids: string | string[], updateMember: Partial<Member>) {
     return MemberModel.updateMany(
       { _id: { $in: ids } },
       { ...updateMember },

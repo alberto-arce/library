@@ -9,6 +9,7 @@ export interface IBorrow {
 
 interface IMember {
   _id: string;
+  dni: number;
   name: string;
   status: string;
 }

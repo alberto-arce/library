@@ -105,7 +105,7 @@ export const Book = () => {
           type: "error",
           title: "Error al Editar Libro",
           text: "No se pudieron guardar los cambios. Inténtalo nuevamente.",
-          timer: 2000
+          timer: 2000,
         });
       }
     } catch {
@@ -113,7 +113,7 @@ export const Book = () => {
         type: "error",
         title: "Oops...",
         text: "Hubo un problema. Por favor, intenta de nuevo más tarde.",
-        timer: 2000
+        timer: 2000,
       });
     }
     setIsEditing(false);
@@ -181,6 +181,7 @@ export const Book = () => {
       headerAlign: "center",
       align: "center",
       flex: 1,
+      hideable: false,
     },
     {
       field: "author",
@@ -188,6 +189,7 @@ export const Book = () => {
       headerAlign: "center",
       align: "center",
       flex: 1,
+      hideable: false,
     },
     {
       field: "category",
@@ -195,6 +197,7 @@ export const Book = () => {
       headerAlign: "center",
       align: "center",
       flex: 1,
+      hideable: false,
     },
     {
       field: "isbn",
@@ -202,6 +205,7 @@ export const Book = () => {
       headerAlign: "center",
       align: "center",
       flex: 1,
+      hideable: false,
     },
     {
       field: "stock",
@@ -209,6 +213,7 @@ export const Book = () => {
       headerAlign: "center",
       align: "center",
       flex: 1,
+      hideable: false,
     },
     {
       field: "externalBorrow",
@@ -216,6 +221,7 @@ export const Book = () => {
       headerAlign: "center",
       align: "center",
       flex: 1,
+      hideable: false,
       renderCell: (params) => params.value.toUpperCase(),
     },
     {
@@ -226,6 +232,7 @@ export const Book = () => {
       flex: 3,
       sortable: false,
       disableColumnMenu: true,
+      hideable: false,
       renderCell: (params) => (
         <>
           <Button
@@ -259,68 +266,77 @@ export const Book = () => {
 
   return (
     <Container>
-      <Grid
-        container
-        spacing={2}
-        alignItems="center"
-        style={{ marginBottom: 20 }}
-      >
-        <Grid
-          item
-          xs={12}
-          sm={8}
-          md={9}
-          style={{ display: "flex", alignItems: "center" }}
-        >
-          <TextField
-            label="Buscar por título"
-            variant="outlined"
-            fullWidth
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            style={{ margin: 0 }}
-          />
-        </Grid>
-        <Grid
-          item
-          xs={12}
-          sm={4}
-          md={3}
-          style={{ display: "flex", alignItems: "center" }}
-        >
-          <Button
-            variant="contained"
-            color="success"
-            onClick={handleOpenAddBookDialog}
-            fullWidth
-            style={{ height: 55 }}
-          >
-            Agregar libro
-          </Button>
-        </Grid>
-      </Grid>
       {!isLoading && !books?.length && <NotFoundImage />}
       {!isLoading && books && books.length > 0 && (
-        <Paper style={{ height: "auto" }}>
-          <DataGrid
-            rows={filteredBooks?.map((book, index) => ({
-              id: index,
-              _id: book._id,
-              title: book.title,
-              author: book.author,
-              category: book.category,
-              isbn: book.isbn,
-              stock: book.stock,
-              externalBorrow: book.externalBorrow,
-            }))}
-            columns={columns}
-            pageSizeOptions={[10, 25, 50, 100]}
-            autoHeight
-            disableColumnResize
-            disableRowSelectionOnClick
-            disableDensitySelector
-          />
-        </Paper>
+        <>
+          <Grid
+            container
+            spacing={2}
+            alignItems="center"
+            style={{ marginBottom: 20 }}
+          >
+            <Grid
+              item
+              xs={12}
+              sm={8}
+              md={9}
+              style={{ display: "flex", alignItems: "center" }}
+            >
+              <TextField
+                placeholder="Buscar por título"
+                variant="outlined"
+                fullWidth
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                style={{ margin: 0, backgroundColor: "#ffffff" }}
+              />
+            </Grid>
+            <Grid
+              item
+              xs={12}
+              sm={4}
+              md={3}
+              style={{ display: "flex", alignItems: "center" }}
+            >
+              <Button
+                variant="contained"
+                color="success"
+                onClick={handleOpenAddBookDialog}
+                fullWidth
+                style={{ height: 55 }}
+              >
+                Agregar libro
+              </Button>
+            </Grid>
+          </Grid>
+          <Paper style={{ height: "auto" }}>
+            <DataGrid
+              rows={filteredBooks?.map((book, index) => ({
+                id: index,
+                _id: book._id,
+                title: book.title,
+                author: book.author,
+                category: book.category,
+                isbn: book.isbn,
+                stock: book.stock,
+                externalBorrow: book.externalBorrow,
+              }))}
+              columns={columns}
+              pageSizeOptions={[10, 25, 50, 100]}
+              autoHeight
+              disableColumnResize
+              disableColumnSelector
+              disableRowSelectionOnClick
+              disableDensitySelector
+              localeText={{
+                noRowsLabel: "No hay libros",
+                columnMenuFilter: "Filtro",
+                columnMenuSortAsc: "Ordenar ascendente",
+                columnMenuSortDesc: "Ordenar descendente",
+              }}
+            />
+          </Paper>
+        </>
       )}
       <AddItemDialog
         open={isAddingBook}

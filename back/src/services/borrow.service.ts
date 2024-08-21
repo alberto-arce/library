@@ -42,7 +42,7 @@ class BorrowService {
       );
     }
     await bookRepository.update(book._id.toString(), { stock: newStock });
-    await memberRepository.update([member._id.toString()], { borrowedAt: Date.now() });
+    await memberRepository.update([member._id.toString()], { borrowedAt: new Date() });
     return this.createResponse(
       201,
       { data: await createdBorrow.populate("member book") },
