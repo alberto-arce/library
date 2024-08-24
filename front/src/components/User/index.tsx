@@ -214,7 +214,9 @@ export const User = () => {
   ];
 
   return (
-    <Container>
+    <Container
+      style={{ height: "70vh", display: "flex", flexDirection: "column" }}
+    >
       {!isLoading && !users?.length && <NotFoundImage />}
       {!isLoading && users && users.length > 0 && (
         <>
@@ -258,7 +260,9 @@ export const User = () => {
               </Button>
             </Grid>
           </Grid>
-          <Paper style={{ height: "auto" }}>
+          <Paper
+            style={{ flex: 1, overflow: "auto", height: "calc(100vh - 150px)" }}
+          >
             <DataGrid
               rows={filteredUsers?.map((user, index) => ({
                 id: index,
@@ -268,7 +272,6 @@ export const User = () => {
               }))}
               columns={columns}
               pageSizeOptions={[10, 25, 50, 100]}
-              autoHeight
               disableColumnResize
               disableColumnSelector
               disableDensitySelector

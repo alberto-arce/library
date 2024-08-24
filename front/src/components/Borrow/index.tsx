@@ -154,7 +154,15 @@ export const Borrow = () => {
   };
 
   return (
-    <Container>
+    <Container
+      maxWidth="lg"
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        height: "70vh",
+        padding: 0,
+      }}
+    >
       {!isLoading && !borrows?.length && <NotFoundImage />}
       {!isLoading && borrows && borrows.length > 0 && (
         <>
@@ -170,34 +178,49 @@ export const Borrow = () => {
               />
             </Grid>
           </Grid>
-          <Paper style={{ height: "auto" }}>
-            <DataGrid
-              rows={filteredBorrows?.map((borrow, index) => ({
-                id: index,
-                _id: borrow._id,
-                bookTitle: borrow?.book?.title,
-                memberDni: borrow?.member?.dni,
-                memberName: borrow?.member?.name,
-                stock: borrow.stock,
-                externalBorrow: borrow.book.externalBorrow.toUpperCase(),
-                createdAt: borrow.createdAt,
-                deletedAt: borrow.deletedAt,
-              }))}
-              columns={columns}
-              pageSizeOptions={[10, 25, 50, 100]}
-              autoHeight
-              disableColumnResize
-              disableColumnSelector
-              disableDensitySelector
-              disableRowSelectionOnClick
-              getRowClassName={getRowClassName}
-              localeText={{
-                noRowsLabel: "No hay préstamos",
-                columnMenuFilter: "Filtro",
-                columnMenuSortAsc: "Ordenar ascendente",
-                columnMenuSortDesc: "Ordenar descendente",
+          <Paper
+            style={{
+              flex: 1,
+              display: "flex",
+              flexDirection: "column",
+              overflow: "hidden",
+            }}
+          >
+            <div
+              style={{
+                flex: 1,
+                display: "flex",
+                flexDirection: "column",
+                overflowY: "auto",
               }}
-            />
+            >
+              <DataGrid
+                rows={filteredBorrows?.map((borrow, index) => ({
+                  id: index,
+                  _id: borrow._id,
+                  bookTitle: borrow?.book?.title,
+                  memberDni: borrow?.member?.dni,
+                  memberName: borrow?.member?.name,
+                  stock: borrow.stock,
+                  externalBorrow: borrow.book.externalBorrow.toUpperCase(),
+                  createdAt: borrow.createdAt,
+                  deletedAt: borrow.deletedAt,
+                }))}
+                columns={columns}
+                pageSizeOptions={[10, 25, 50, 100]}
+                disableColumnResize
+                disableColumnSelector
+                disableDensitySelector
+                disableRowSelectionOnClick
+                getRowClassName={getRowClassName}
+                localeText={{
+                  noRowsLabel: "No hay préstamos",
+                  columnMenuFilter: "Filtro",
+                  columnMenuSortAsc: "Ordenar ascendente",
+                  columnMenuSortDesc: "Ordenar descendente",
+                }}
+              />
+            </div>
           </Paper>
         </>
       )}

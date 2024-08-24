@@ -27,7 +27,10 @@ export const BorrowModal: React.FC<BorrowModalProps> = ({
   }, []);
 
   useEffect(() => {
-    setSelectedMember(null);
+    if (isOpen) {
+      setNumberSelectedBooks(1);
+      setSelectedMember(null);
+    }
   }, [isOpen]);
 
   const handleChooseMember = (member: IMember) => {
@@ -90,102 +93,113 @@ export const BorrowModal: React.FC<BorrowModalProps> = ({
       field: "dni",
       headerName: "DNI socio",
       flex: 1,
-      hideable: false,
     },
     {
       field: "name",
       headerName: "Nombre socio",
       flex: 1,
-      hideable: false,
     },
     {
       field: "lastname",
       headerName: "Apellido socio",
       flex: 1,
-      hideable: false,
     },
   ];
 
+  const handleNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    if (/^\d*$/.test(value) && Number(value) >= 1) {
+      setNumberSelectedBooks(Number(value));
+    }
+  };
+
   return (
-    <>
-      <Modal open={isOpen} onClose={closeBorrowModal}>
-        <div className="modal-container">
-          {selectedBook && (
-            <div>
-              <Typography
-                variant="h6"
-                color="textSecondary"
-                style={{ marginBottom: 30 }}
-              >
-                Libro seleccionado: {selectedBook.title}
-              </Typography>
-            </div>
-          )}
-          <Box style={{ marginBottom: 30 }}>
-            <Paper>
-              <DataGrid
-                rows={members?.map((member, index) => ({
-                  id: index,
-                  _id: member._id,
-                  dni: member.dni,
-                  name: member.name,
-                  lastname: member.lastname,
-                }))}
-                columns={columns}
-                autoHeight
-                pageSizeOptions={[10, 25]}
-                onRowClick={(params) => handleChooseMember(params.row)}
-                disableColumnResize
-                disableColumnSelector
-                localeText={{
-                  noRowsLabel: "No hay socios",
-                  columnMenuFilter: 'Filtro',
-                  columnMenuSortAsc: 'Ordenar ascendente',
-                  columnMenuSortDesc: 'Ordenar descendente',
-                  footerRowSelected: (count: number) =>
-                    `${count} fila seleccionada`,
-                }}
-              />
-            </Paper>
-          </Box>
-          <TextField
-            label="Cantidad de libros"
-            variant="outlined"
-            fullWidth
-            type="number"
-            value={numberSelectedBooks}
-            onChange={(e) => setNumberSelectedBooks(Number(e.target.value))}
-            style={{ marginTop: 20, marginBottom: 20 }}
-          />
-          <Grid
-            container
-            spacing={2}
-            justifyContent="flex-end"
-            style={{ marginTop: 20 }}
+    <Modal open={isOpen} onClose={closeBorrowModal}>
+      <div
+        className="modal-container"
+        style={{
+          padding: 20,
+          height: "85vh",
+          display: "flex",
+          flexDirection: "column",
+        }}
+      >
+        {selectedBook && (
+          <Typography
+            variant="h6"
+            color="textSecondary"
+            style={{ marginBottom: 30 }}
           >
-            <Grid item>
-              <Button
-                variant="contained"
-                color="error"
-                onClick={closeBorrowModal}
-                style={{ marginRight: 10 }}
-              >
-                Cancelar
-              </Button>
-            </Grid>
-            <Grid item>
-              <Button
-                variant="contained"
-                color="success"
-                onClick={handleConfirmBorrow}
-                disabled={!selectedMember}
-              >
-                Confirmar
-              </Button>
-            </Grid>
+            Libro seleccionado: {selectedBook.title}
+          </Typography>
+        )}
+        <Box
+          className="table-container"
+          style={{ flex: 1, overflow: "auto", marginBottom: 30 }}
+        >
+          <Paper style={{ height: "100%" }}>
+            <DataGrid
+              rows={members?.map((member, index) => ({
+                id: index,
+                _id: member._id,
+                dni: member.dni,
+                name: member.name,
+                lastname: member.lastname,
+              }))}
+              columns={columns}
+              pageSizeOptions={[10, 25, 50, 100]}
+              onRowClick={(params) => handleChooseMember(params.row)}
+              disableColumnResize
+              disableColumnSelector
+              localeText={{
+                noRowsLabel: "No hay socios",
+                columnMenuFilter: "Filtro",
+                columnMenuSortAsc: "Ordenar ascendente",
+                columnMenuSortDesc: "Ordenar descendente",
+                footerRowSelected: (count: number) =>
+                  `${count} fila seleccionada`,
+              }}
+            />
+          </Paper>
+        </Box>
+        <TextField
+          label="Cantidad de libros"
+          variant="outlined"
+          fullWidth
+          type="number"
+          value={numberSelectedBooks}
+          onChange={handleNumberChange}
+          inputProps={{ min: 1, step: 1 }}
+          style={{ marginTop: 20, marginBottom: 20 }}
+        />
+        <Grid
+          container
+          spacing={2}
+          justifyContent="flex-end"
+          style={{ marginTop: 10 }}
+        >
+          <Grid item>
+            <Button
+              variant="contained"
+              color="error"
+              onClick={closeBorrowModal}
+              style={{ marginRight: 10 }}
+            >
+              Cancelar
+            </Button>
           </Grid>
-        </div>
-      </Modal>
-    </>
+          <Grid item>
+            <Button
+              variant="contained"
+              color="success"
+              onClick={handleConfirmBorrow}
+              disabled={!selectedMember}
+            >
+              Confirmar
+            </Button>
+          </Grid>
+        </Grid>
+      </div>
+    </Modal>
   );
 };

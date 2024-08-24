@@ -6,7 +6,7 @@ declare global {
     interface Request {
       isAdmin: () => boolean;
       isEmployee: () => boolean;
-      user: any;
+      user: string | jwt.JwtPayload;
     }
   }
 }

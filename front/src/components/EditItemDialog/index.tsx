@@ -40,25 +40,34 @@ export const EditItemDialog = ({
       <DialogTitle>{title}</DialogTitle>
       <DialogContent>
         {fields.map((field: any) => (
-          <FormControl
-            fullWidth
-            key={field.label}
-            style={{ margin: 5 }}
-          >
-            {/* <Input
-              value={editedData[field.value] || ""}
-              onChange={(e) => handleFieldChange(field.value, e.target.value)}
-            />
-            <FormHelperText>{field.label}</FormHelperText> */}
+          <FormControl fullWidth key={field.label} style={{ margin: 5 }}>
             <TextField
-              type={field.value === "password" ? "password" : "text"}
-              value={editedData[field.value] || ""}
+              type={
+                field.value === "stock"
+                  ? "number"
+                  : field.value === "password"
+                  ? "password"
+                  : "text"
+              }
+              value={
+                editedData[field.value] || (field.value === "stock" ? 1 : "")
+              }
               onChange={(e) => handleFieldChange(field.value, e.target.value)}
               label={field.label}
               placeholder={`${field.label}`}
               variant="outlined"
               fullWidth
-            />
+              inputProps={{
+                min: field.value === "stock" ? 1 : undefined,
+                step: field.value === "stock" ? 1 : undefined,
+              }}
+              helperText={
+                field.value === "stock" &&
+                (editedData[field.value] < 0
+                  ? "Cantidad debe ser un número positivo"
+                  : "")
+              }
+            /> 
           </FormControl>
         ))}
       </DialogContent>

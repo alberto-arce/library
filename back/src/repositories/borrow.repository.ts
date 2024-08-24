@@ -1,7 +1,9 @@
-import { BorrowModel } from "../models";
+import { FilterQuery } from 'mongoose';
+
+import { Borrow, BorrowModel } from "../models";
 
 class BorrowRepository {
-  async getAll(criteria?: any, relations?: string[]) {
+  async getAll(criteria?: FilterQuery<Borrow> | null, relations?: string[]) {
     const query = BorrowModel.find({ ...criteria });
     if (relations) {
       query.populate(relations.toString());
@@ -13,7 +15,7 @@ class BorrowRepository {
     return BorrowModel.findById(id).populate("book").exec();
   }
 
-  async create(borrow: any) {
+  async create(borrow: Partial<Borrow>) {
     return BorrowModel.create(borrow);
   }
 

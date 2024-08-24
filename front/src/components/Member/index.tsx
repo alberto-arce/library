@@ -288,7 +288,9 @@ export const Member = () => {
   ];
 
   return (
-    <Container>
+    <Container
+      style={{ display: "flex", flexDirection: "column", height: "70vh" }}
+    >
       {!isLoading && !members?.length && <NotFoundImage />}
       {!isLoading && members && members.length > 0 && (
         <>
@@ -332,30 +334,33 @@ export const Member = () => {
               </Button>
             </Grid>
           </Grid>
-          <Paper style={{ height: "auto" }}>
-            <DataGrid
-              rows={filteredMembers?.map((member, index) => ({
-                id: index,
-                _id: member._id,
-                dni: member.dni,
-                name: member.name,
-                lastname: member.lastname,
-                status: member.status,
-              }))}
-              columns={columns}
-              pageSizeOptions={[10, 25, 50, 100]}
-              autoHeight
-              disableColumnResize
-              disableColumnSelector
-              disableRowSelectionOnClick
-              disableDensitySelector
-              localeText={{
-                noRowsLabel: "No hay socios",
-                columnMenuFilter: "Filtro",
-                columnMenuSortAsc: "Ordenar ascendente",
-                columnMenuSortDesc: "Ordenar descendente",
-              }}
-            />
+          <Paper
+            style={{ flex: 1, overflow: "auto", height: "calc(100% - 80px)" }}
+          >
+            <div style={{ height: "100%", width: "100%" }}>
+              <DataGrid
+                rows={filteredMembers?.map((member, index) => ({
+                  id: index,
+                  _id: member._id,
+                  dni: member.dni,
+                  name: member.name,
+                  lastname: member.lastname,
+                  status: member.status,
+                }))}
+                columns={columns}
+                pageSizeOptions={[10, 25, 50, 100]}
+                disableColumnResize
+                disableColumnSelector
+                disableRowSelectionOnClick
+                disableDensitySelector
+                localeText={{
+                  noRowsLabel: "No hay socios",
+                  columnMenuFilter: "Filtro",
+                  columnMenuSortAsc: "Ordenar ascendente",
+                  columnMenuSortDesc: "Ordenar descendente",
+                }}
+              />
+            </div>
           </Paper>
         </>
       )}

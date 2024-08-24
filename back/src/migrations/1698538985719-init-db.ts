@@ -15,7 +15,7 @@ export async function up(): Promise<void> {
     },
     {
       name: "emp",
-      lastname: "admin",
+      lastname: "emp",
       password: await bcrypt.hash("emp", 10),
       role: "employee",
     },

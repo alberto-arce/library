@@ -56,7 +56,7 @@ export const AddItemDialog = ({
     if (open) {
       setItem(
         fields.reduce((acc, field) => {
-          acc[field.value] = "";
+          acc[field.value] = field.value === "stock" ? "1" : "";
           return acc;
         }, {} as Item)
       );
@@ -114,14 +114,30 @@ export const AddItemDialog = ({
               </Select>
             ) : (
               <TextField
-                type={field.value === "password" ? "password" : "text"}
-                value={item[field.value] || ""}
+                type={
+                  field.value === "stock"
+                    ? "number"
+                    : field.value === "password"
+                    ? "password"
+                    : "text"
+                }
+                value={item[field.value] || (field.value === "stock" ? 1 : "")}
                 onChange={(e) => handleFieldChange(field.value, e.target.value)}
                 label={field.label}
                 placeholder={`${field.label}`}
                 variant="outlined"
                 fullWidth
-                inputProps={field.value === "dni" ? { maxLength: 8 } : {}}
+                inputProps={{
+                  type:
+                    field.value === "stock"
+                      ? "number"
+                      : field.value === "password"
+                      ? "password"
+                      : undefined,
+                  min: field.value === "stock" ? 1 : undefined,
+                  step: field.value === "stock" ? 1 : undefined,
+                  maxLength: field.value === "dni" ? 8 : undefined,
+                }}
                 helperText={
                   field.value === "dni" &&
                   (item[field.value]?.trim().length !== 8

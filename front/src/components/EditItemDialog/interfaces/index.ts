@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 export interface IEditItemProps {
   open: boolean;
   onClose: () => void; 

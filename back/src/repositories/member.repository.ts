@@ -1,7 +1,9 @@
+import { FilterQuery } from "mongoose";
+
 import { Member, MemberModel } from "../models";
 
 class MemberRepository {
-  async getAll(criteria?: any) {
+  async getAll(criteria?: FilterQuery<Member>) {
     return MemberModel.find({ ...criteria }).exec();
   }
 

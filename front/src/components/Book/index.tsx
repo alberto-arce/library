@@ -72,6 +72,7 @@ export const Book = () => {
           type: "error",
           title: "Agregar Libro Fallido",
           text: "No se pudo agregar el libro. Por favor, inténtalo de nuevo.",
+          timer: 2000,
         });
       }
     } catch {
@@ -265,7 +266,10 @@ export const Book = () => {
   ];
 
   return (
-    <Container>
+    <Container
+      maxWidth="lg"
+      style={{ display: 'flex', flexDirection: 'column', height: '70vh', padding: 0 }}
+    >
       {!isLoading && !books?.length && <NotFoundImage />}
       {!isLoading && books && books.length > 0 && (
         <>
@@ -309,32 +313,33 @@ export const Book = () => {
               </Button>
             </Grid>
           </Grid>
-          <Paper style={{ height: "auto" }}>
-            <DataGrid
-              rows={filteredBooks?.map((book, index) => ({
-                id: index,
-                _id: book._id,
-                title: book.title,
-                author: book.author,
-                category: book.category,
-                isbn: book.isbn,
-                stock: book.stock,
-                externalBorrow: book.externalBorrow,
-              }))}
-              columns={columns}
-              pageSizeOptions={[10, 25, 50, 100]}
-              autoHeight
-              disableColumnResize
-              disableColumnSelector
-              disableRowSelectionOnClick
-              disableDensitySelector
-              localeText={{
-                noRowsLabel: "No hay libros",
-                columnMenuFilter: "Filtro",
-                columnMenuSortAsc: "Ordenar ascendente",
-                columnMenuSortDesc: "Ordenar descendente",
-              }}
-            />
+          <Paper style={{ flex: 1, overflow: "auto", height: "100%" }}>
+            <div style={{ height: "100%", width: "100%" }}>
+              <DataGrid
+                rows={filteredBooks?.map((book, index) => ({
+                  id: index,
+                  _id: book._id,
+                  title: book.title,
+                  author: book.author,
+                  category: book.category,
+                  isbn: book.isbn,
+                  stock: book.stock,
+                  externalBorrow: book.externalBorrow,
+                }))}
+                columns={columns}
+                pageSizeOptions={[10, 25, 50, 100]}
+                disableColumnResize
+                disableColumnSelector
+                disableRowSelectionOnClick
+                disableDensitySelector
+                localeText={{
+                  noRowsLabel: "No hay libros",
+                  columnMenuFilter: "Filtro",
+                  columnMenuSortAsc: "Ordenar ascendente",
+                  columnMenuSortDesc: "Ordenar descendente",
+                }}
+              />
+            </div>
           </Paper>
         </>
       )}
@@ -373,4 +378,4 @@ export const Book = () => {
       />
     </Container>
   );
-};
+}

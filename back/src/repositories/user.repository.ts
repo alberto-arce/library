@@ -1,4 +1,3 @@
-import { IUser } from "../interfaces";
 import { User, UserModel } from "../models";
 
 class UserRepository {
@@ -14,13 +13,13 @@ class UserRepository {
     return UserModel.create(user);
   }
 
-  async update(id: string, updateUser: any) {
+  async update(id: string, updateUser: Partial<User>) {
     return UserModel.findByIdAndUpdate(id, updateUser, {
       new: true,
     }).exec();
   }
 
-  async delete(id: string): Promise<IUser | null> {
+  async delete(id: string): Promise<Partial<User> | null> {
     return UserModel.findByIdAndRemove(id).exec();
   }
 }
