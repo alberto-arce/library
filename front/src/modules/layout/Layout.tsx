@@ -11,11 +11,12 @@ import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 
 const pages = ["usuarios", "socios", "libros", "prestamos"];
 const settings = ["salir"];
+
 export const LayoutModule: React.FC<{
   userName: string;
   userRole: string | undefined;
@@ -23,6 +24,7 @@ export const LayoutModule: React.FC<{
   const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElNav(event.currentTarget);
@@ -91,10 +93,14 @@ export const LayoutModule: React.FC<{
                       <Button
                         key={page}
                         onClick={handleCloseNavMenu}
-                        sx={{ my: 2, color: "white", display: "block" }}
+                        sx={{
+                          my: 2,
+                          color: location.pathname === `/${page}` ? "FFA500" : "white", 
+                          display: "block",
+                        }}
                       >
                         <Link
-                          style={{ textDecoration: "none", color: "white" }}
+                          style={{ textDecoration: "none", color: "inherit" }}
                           to={`/${page}`}
                         >
                           {page}
@@ -112,13 +118,15 @@ export const LayoutModule: React.FC<{
                       .map((page) => (
                         <Button
                           key={page}
-                          onClick={() => {
-                            handleCloseNavMenu();
+                          onClick={handleCloseNavMenu}
+                          sx={{
+                            my: 2,
+                            color: location.pathname === `/${page}` ? "FFA500" : "white",
+                            display: "block",
                           }}
-                          style={{ textDecoration: "none", color: "white" }}
                         >
                           <Link
-                            style={{ textDecoration: "none", color: "white" }}
+                            style={{ textDecoration: "none", color: "inherit" }}
                             to={`/${page}`}
                           >
                             {page}
@@ -136,10 +144,14 @@ export const LayoutModule: React.FC<{
                     <Button
                       key={page}
                       onClick={handleCloseNavMenu}
-                      sx={{ my: 2, color: "black", display: "block" }}
+                      sx={{
+                        my: 2,
+                        color: location.pathname === `/${page}` ? "#FFA500" : "white",
+                        display: "block",
+                      }}
                     >
                       <Link
-                        style={{ textDecoration: "none", color: "white" }}
+                        style={{ textDecoration: "none", color: "inherit" }}
                         to={`/${page}`}
                       >
                         {page}
@@ -156,10 +168,14 @@ export const LayoutModule: React.FC<{
                       <Button
                         key={page}
                         onClick={handleCloseNavMenu}
-                        sx={{ my: 2, color: "white", display: "block" }}
+                        sx={{
+                          my: 2,
+                          color: location.pathname === `/${page}` ? "FFA500" : "white",
+                          display: "block",
+                        }}
                       >
                         <Link
-                          style={{ textDecoration: "none", color: "white" }}
+                          style={{ textDecoration: "none", color: "inherit" }}
                           to={`/${page}`}
                         >
                           {page}
