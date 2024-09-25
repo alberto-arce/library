@@ -309,7 +309,7 @@ export const Book = () => {
                 fullWidth
                 style={{ height: 55 }}
               >
-                Agregar libro
+                agregar
               </Button>
             </Grid>
           </Grid>
@@ -332,11 +332,16 @@ export const Book = () => {
                 disableColumnSelector
                 disableRowSelectionOnClick
                 disableDensitySelector
+                disableColumnMenu
                 localeText={{
                   noRowsLabel: "No hay libros",
                   columnMenuFilter: "Filtro",
                   columnMenuSortAsc: "Ordenar ascendente",
                   columnMenuSortDesc: "Ordenar descendente",
+                  MuiTablePagination: {
+                    labelRowsPerPage: "Filas por página",
+                    labelDisplayedRows: ({ from, to, count }) => `${from}–${to} de ${count}`,
+                  },
                 }}
               />
             </div>

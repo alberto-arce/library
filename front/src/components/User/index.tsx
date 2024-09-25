@@ -256,7 +256,7 @@ export const User = () => {
                 fullWidth
                 style={{ height: 55 }}
               >
-                Agregar usuario
+                agregar
               </Button>
             </Grid>
           </Grid>
@@ -276,11 +276,17 @@ export const User = () => {
               disableColumnSelector
               disableDensitySelector
               disableRowSelectionOnClick
+              disableColumnMenu
               localeText={{
                 noRowsLabel: "No hay usuarios",
                 columnMenuFilter: "Filtro",
                 columnMenuSortAsc: "Ordenar ascendente",
                 columnMenuSortDesc: "Ordenar descendente",
+                MuiTablePagination: {
+                  labelRowsPerPage: "Filas por página",
+                  labelDisplayedRows: ({ from, to, count }) =>
+                    `${from}–${to} de ${count}`,
+                },
               }}
             />
           </Paper>

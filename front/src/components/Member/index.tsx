@@ -330,7 +330,7 @@ export const Member = () => {
                 fullWidth
                 style={{ height: 55 }}
               >
-                Agregar socio
+                agregar
               </Button>
             </Grid>
           </Grid>
@@ -353,11 +353,16 @@ export const Member = () => {
                 disableColumnSelector
                 disableRowSelectionOnClick
                 disableDensitySelector
+                disableColumnMenu
                 localeText={{
                   noRowsLabel: "No hay socios",
                   columnMenuFilter: "Filtro",
                   columnMenuSortAsc: "Ordenar ascendente",
                   columnMenuSortDesc: "Ordenar descendente",
+                  MuiTablePagination: {
+                    labelRowsPerPage: "Filas por página",
+                    labelDisplayedRows: ({ from, to, count }) => `${from}–${to} de ${count}`,
+                  },
                 }}
               />
             </div>

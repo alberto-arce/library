@@ -10,12 +10,10 @@ import Container from "@mui/material/Container";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import Tooltip from "@mui/material/Tooltip";
-import MenuItem from "@mui/material/MenuItem";
 import { Link, useLocation } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 
 const pages = ["usuarios", "socios", "libros", "prestamos"];
-const settings = ["salir"];
 
 export const LayoutModule: React.FC<{
   userName: string;
@@ -45,6 +43,8 @@ export const LayoutModule: React.FC<{
   const handleLogout = () => {
     navigate("/ingresar");
   };
+
+  const isActive = (page: string) => location.pathname === `/${page}`;
 
   return (
     <>
@@ -95,7 +95,14 @@ export const LayoutModule: React.FC<{
                         onClick={handleCloseNavMenu}
                         sx={{
                           my: 2,
-                          color: location.pathname === `/${page}` ? "FFA500" : "white", 
+                          mx: 1,
+                          color: isActive(page) ? "#FFA500" : "white",
+                          textDecoration: isActive(page) ? "underline" : "none",
+                          backgroundColor: "transparent",
+                          "&:hover": {
+                            backgroundColor: isActive(page) ? "transparent" : "#555",
+                            color: isActive(page) ? "#FFA500" : "white",
+                          },
                           display: "block",
                         }}
                       >
@@ -112,16 +119,21 @@ export const LayoutModule: React.FC<{
                 {userRole === "employee" && (
                   <div>
                     {pages
-                      .filter(
-                        (page) => page !== "usuarios" && page !== "socios"
-                      )
+                      .filter((page) => page !== "usuarios" && page !== "socios")
                       .map((page) => (
                         <Button
                           key={page}
                           onClick={handleCloseNavMenu}
                           sx={{
                             my: 2,
-                            color: location.pathname === `/${page}` ? "FFA500" : "white",
+                            mx: 1,
+                            color: isActive(page) ? "#FFA500" : "white",
+                            textDecoration: isActive(page) ? "underline" : "none",
+                            backgroundColor: "transparent",
+                            "&:hover": {
+                              backgroundColor: isActive(page) ? "transparent" : "#555",
+                              color: isActive(page) ? "#FFA500" : "white",
+                            },
                             display: "block",
                           }}
                         >
@@ -146,7 +158,14 @@ export const LayoutModule: React.FC<{
                       onClick={handleCloseNavMenu}
                       sx={{
                         my: 2,
-                        color: location.pathname === `/${page}` ? "#FFA500" : "white",
+                        mx: 1,
+                        color: isActive(page) ? "#FFA500" : "white",
+                        textDecoration: isActive(page) ? "underline" : "none",
+                        backgroundColor: "transparent",
+                        "&:hover": {
+                          backgroundColor: isActive(page) ? "transparent" : "#555",
+                          color: isActive(page) ? "#FFA500" : "white",
+                        },
                         display: "block",
                       }}
                     >
@@ -170,7 +189,14 @@ export const LayoutModule: React.FC<{
                         onClick={handleCloseNavMenu}
                         sx={{
                           my: 2,
-                          color: location.pathname === `/${page}` ? "FFA500" : "white",
+                          mx: 1,
+                          color: isActive(page) ? "#FFA500" : "white",
+                          textDecoration: isActive(page) ? "underline" : "none",
+                          backgroundColor: "transparent",
+                          "&:hover": {
+                            backgroundColor: isActive(page) ? "transparent" : "#555",
+                            color: isActive(page) ? "#FFA500" : "white",
+                          },
                           display: "block",
                         }}
                       >
@@ -188,7 +214,9 @@ export const LayoutModule: React.FC<{
             <Box sx={{ flexGrow: 0 }}>
               <Tooltip title="Configuraciones">
                 <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                  <Avatar sx={{ bgcolor: '#f50057' }}>{userName.charAt(0).toUpperCase()}</Avatar>
+                  <Avatar sx={{ bgcolor: "#f50057" }}>
+                    {userName.charAt(0).toUpperCase()}
+                  </Avatar>
                 </IconButton>
               </Tooltip>
               <Menu
@@ -207,27 +235,37 @@ export const LayoutModule: React.FC<{
                 open={Boolean(anchorElUser)}
                 onClose={handleCloseUserMenu}
               >
-                {settings.map((setting) => (
-                  <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                    <Typography textAlign="center">
-                      {setting === "salir" ? (
-                        <>
-                          <span style={{cursor: 'default'}}>Hola {userName}</span> <br/>
-                          <a
-                            onClick={(e) => {
-                              e.preventDefault();
-                              handleLogout();
-                            }}
-                          >
-                            {setting}
-                          </a>
-                        </>
-                      ) : (
-                        setting
-                      )}
-                    </Typography>
-                  </MenuItem>
-                ))}
+                <Box 
+                  sx={{ 
+                    display: 'flex', 
+                    flexDirection: 'column', 
+                    alignItems: 'center', 
+                    padding: 1,
+                    width: 'auto', 
+                    minWidth: 100, 
+                  }}
+                >
+                  <Typography textAlign="center" sx={{ mb: 1, pointerEvents: 'none' }}>
+                    Hola {userName}
+                  </Typography>
+                  <Button
+                    onClick={(e) => {
+                      e.preventDefault();
+                      handleLogout();
+                    }}
+                    sx={{
+                      color: "inherit",
+                      "&:hover": {
+                        backgroundColor: "#d32f2f",
+                        color: "white",
+                      },
+                      padding: 0,
+                      marginTop: 1,
+                    }}
+                  >
+                    Salir
+                  </Button>
+                </Box>
               </Menu>
             </Box>
           </Toolbar>

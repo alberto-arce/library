@@ -212,12 +212,17 @@ export const Borrow = () => {
                 disableColumnSelector
                 disableDensitySelector
                 disableRowSelectionOnClick
+                disableColumnMenu
                 getRowClassName={getRowClassName}
                 localeText={{
                   noRowsLabel: "No hay préstamos",
                   columnMenuFilter: "Filtro",
                   columnMenuSortAsc: "Ordenar ascendente",
                   columnMenuSortDesc: "Ordenar descendente",
+                  MuiTablePagination: {
+                    labelRowsPerPage: "Filas por página",
+                    labelDisplayedRows: ({ from, to, count }) => `${from}–${to} de ${count}`,
+                  },
                 }}
               />
             </div>

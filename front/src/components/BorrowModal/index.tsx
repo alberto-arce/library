@@ -158,6 +158,11 @@ export const BorrowModal: React.FC<BorrowModalProps> = ({
                 columnMenuSortDesc: "Ordenar descendente",
                 footerRowSelected: (count: number) =>
                   `${count} fila seleccionada`,
+                MuiTablePagination: {
+                  labelRowsPerPage: "Filas por página",
+                  labelDisplayedRows: ({ from, to, count }) =>
+                    `${from}–${to} de ${count}`,
+                },
               }}
             />
           </Paper>
