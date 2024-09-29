@@ -2,6 +2,7 @@ import { Request } from "express";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
+import { SECRET_KEY } from "../common";
 import { authRepository } from "../repositories";
 import { User } from "../models";
 
@@ -22,7 +23,7 @@ class AuthService {
       statusCode: 200,
       data: {
         user: { name: user.name, role: user.role },
-        token: jwt.sign({ name: user.name, role: user.role }, "SECRET_KEY"),
+        token: jwt.sign({ name: user.name, role: user.role }, SECRET_KEY),
         success: true,
       },
     };

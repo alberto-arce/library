@@ -1,1 +1,1 @@
-export { PORT, MONGODB_URI } from "./constants";
+export { PORT, MONGODB_URI, SECRET_KEY } from "./constants";

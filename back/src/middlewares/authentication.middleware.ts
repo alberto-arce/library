@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 
 import { logger } from "../logs";
+import { SECRET_KEY } from "../common";
 
 export const authentication = (
   req: Request,
@@ -13,7 +14,7 @@ export const authentication = (
     if (!token) {
       return sendUnauthorizedResponse(res, "Unauthorized");
     }
-    const user = jwt.verify(token, "SECRET_KEY");
+    const user = jwt.verify(token, SECRET_KEY);
     if (!user) {
       return sendUnauthorizedResponse(res, "Unauthorized");
     }

@@ -1,6 +1,8 @@
 import { Request, NextFunction, Response } from "express";
 import jwt, { JwtPayload } from "jsonwebtoken";
 
+import { SECRET_KEY } from "../common";
+
 declare global {
   namespace Express {
     interface Request {
@@ -19,7 +21,7 @@ export const authorization =
       return;
     }
     try {
-      const user = jwt.verify(token, "SECRET_KEY") as JwtPayload;
+      const user = jwt.verify(token, SECRET_KEY) as JwtPayload;
       if (!roles.includes(user.role)) {
         res.status(403).json({ message: "Unauthorized" });
       } else {

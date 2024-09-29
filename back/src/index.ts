@@ -1,5 +1,6 @@
 import express from "express";
 import cors from "cors";
+import RateLimit from "express-rate-limit";
 
 import { PORT } from "./common";
 import {
@@ -14,8 +15,16 @@ import { logger } from "./logs";
 import { authentication, authorization } from "./middlewares";
 
 const app = express();
+
+const limiter = RateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+  message: "Too many requests, please try again later.",
+});
+
 app.use(cors());
 app.use(express.json());
+app.use(limiter);
 app.use("/v1", authRoutes);
 app.use(authorization(['admin', 'employee']));
 app.use("/v1", authentication, userRoutes);
