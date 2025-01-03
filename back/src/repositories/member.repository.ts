@@ -26,7 +26,7 @@ class MemberRepository {
   }
 
   async delete(id: string) {
-    return MemberModel.findByIdAndRemove(id).exec();
+    return MemberModel.findByIdAndDelete(id).exec();
   }
 
   async changeStatus(id: string, status: string) {

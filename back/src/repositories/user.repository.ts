@@ -20,7 +20,7 @@ class UserRepository {
   }
 
   async delete(id: string): Promise<Partial<User> | null> {
-    return UserModel.findByIdAndRemove(id).exec();
+    return UserModel.findByIdAndDelete(id).exec();
   }
 }
 export const userRepository = new UserRepository();

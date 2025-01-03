@@ -21,7 +21,7 @@
     "dotenv": "^16.3.1",
     "express-rate-limit": "^7.4.0",
     "jsonwebtoken": "^9.0.2",
-    "mongoose": "^7.5.4",
+    "mongoose": "^8.9.3",
     "ts-migrate-mongoose": "^3.4.1",
     "winston": "^3.11.0"
   },

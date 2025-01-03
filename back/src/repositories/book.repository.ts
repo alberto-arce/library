@@ -20,7 +20,7 @@ class BookRepository {
   }
 
   async delete(id: string): Promise<Book | null> {
-    return BookModel.findByIdAndRemove(id).exec();
+    return BookModel.findByIdAndDelete(id).exec();
   }
 }
 export const bookRepository = new BookRepository();
