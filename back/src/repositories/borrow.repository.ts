@@ -1,10 +1,10 @@
-import { FilterQuery } from 'mongoose';
+import { Filter } from 'mongodb';
 
 import { Borrow, BorrowModel } from "../models";
 
 class BorrowRepository {
-  async getAll(criteria?: FilterQuery<Borrow> | null, relations?: string[]) {
-    const query = BorrowModel.find({ ...criteria });
+  async getAll(criteria?: Filter<Borrow> | null, relations?: string[]) {
+    const query = BorrowModel.find({filter: criteria});
     if (relations) {
       query.populate(relations.toString());
     }

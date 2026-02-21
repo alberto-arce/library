@@ -12,7 +12,7 @@ class BookService {
   }
 
   async getOne(req: Request) {
-    const { id } = req.params;
+    const id = req.params.id as string;
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return this.createResponse(400, { error: "Invalid ID" }, false);
     }
@@ -32,7 +32,7 @@ class BookService {
   }
 
   async update(req: Request) {
-    const { id } = req.params;
+    const id = req.params.id as string;
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return this.createResponse(400, { error: "Invalid ID" }, false);
     }
@@ -44,7 +44,7 @@ class BookService {
   }
 
   async delete(req: Request) {
-    const { id } = req.params;
+    const id = req.params.id as string;
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return this.createResponse(400, { error: "Invalid ID" }, false);
     }

@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { ObjectId } from "mongodb";
 import { Request } from "express";
 
 import { borrowRepository, memberRepository } from "../repositories";
@@ -29,10 +30,10 @@ class MemberService {
 
   async getOne(req: Request) {
     const { id } = req.params;
-    if (!mongoose.Types.ObjectId.isValid(id)) {
+    if (!mongoose.Types.ObjectId.isValid(String(id))) {
       return null;
     }
-    return memberRepository.getOne(id);
+    return memberRepository.getOne(String(id));
   }
 
   async create(req: Request) {
@@ -49,7 +50,7 @@ class MemberService {
 
   async update(req: Request) {
     const { id } = req.params;
-    if (!mongoose.Types.ObjectId.isValid(id)) {
+    if (!mongoose.Types.ObjectId.isValid(String(id))) {
       return this.createResponse(400, { error: "Invalid ID" }, false);
     }
     const updatedMember = await memberRepository.update(id, { ...req.body });
@@ -65,10 +66,10 @@ class MemberService {
 
   async delete(req: Request) {
     const { id } = req.params;
-    if (!mongoose.Types.ObjectId.isValid(id)) {
+    if (!mongoose.Types.ObjectId.isValid(String(id))) {
       return this.createResponse(400, { error: "Invalid ID" }, false);
     }
-    const memberBorrows = await borrowRepository.getAll({ member: id }, [
+    const memberBorrows = await borrowRepository.getAll({ member: new ObjectId(String(id)) }, [
       "member",
     ]);
     const hasActiveBorrows = memberBorrows.some(
@@ -81,7 +82,7 @@ class MemberService {
         false
       );
     }
-    const deletedMember = await memberRepository.delete(id);
+    const deletedMember = await memberRepository.delete(String(id));
     if (!deletedMember) {
       return this.createResponse(500, { error: "No se pudo eliminar" }, false);
     }
@@ -90,10 +91,10 @@ class MemberService {
 
   async changeStatus(req: Request) {
     const { id } = req.params;
-    if (!mongoose.Types.ObjectId.isValid(id)) {
+    if (!mongoose.Types.ObjectId.isValid(String(id))) {
       return this.createResponse(400, { error: "Invalid ID" }, false);
     }
-    const updatedMember = await memberRepository.changeStatus(id, "activado");
+    const updatedMember = await memberRepository.changeStatus(String(id), "activado");
     if (!updatedMember) {
       return this.createResponse(
         500,

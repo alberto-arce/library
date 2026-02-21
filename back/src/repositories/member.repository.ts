@@ -1,10 +1,10 @@
-import { FilterQuery } from "mongoose";
+import { Filter } from 'mongodb';
 
 import { Member, MemberModel } from "../models";
 
 class MemberRepository {
-  async getAll(criteria?: FilterQuery<Member>) {
-    return MemberModel.find({ ...criteria }).exec();
+  async getAll(criteria?: Filter<Member>) {
+    return MemberModel.find({filter: criteria}).exec();
   }
 
   async getOne(id: string) {
@@ -16,13 +16,12 @@ class MemberRepository {
   }
 
   async update(ids: string | string[], updateMember: Partial<Member>) {
-    return MemberModel.updateMany(
-      { _id: { $in: ids } },
-      { ...updateMember },
-      {
-        new: true,
-      }
+    const idArray = Array.isArray(ids) ? ids : [ids];
+    await MemberModel.updateMany(
+      { _id: { $in: idArray } },
+      { ...updateMember }
     ).exec();
+    return MemberModel.find({ _id: { $in: idArray } }).exec();
   }
 
   async delete(id: string) {
